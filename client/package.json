@@ -23,12 +23,19 @@
     "@angular/platform-browser-dynamic": "^2.4.10",
     "@angular/router": "^3.4.10",
     "@angular/upgrade": "^2.4.10",
+    "@types/jquery": "2.0.47",
+    "@types/jquery.datatables": "^1.10.36",
+    "angular-datatables": "^4.1.1",
     "angular-in-memory-web-api": "^0.1.17",
     "angular2-google-maps": "^0.17.0",
     "angular2-localstorage": "^0.4.0",
     "bootstrap": "^3.3.7",
     "bootstrap-material-design": "^0.5.10",
     "core-js": "^2.4.1",
+    "datatables.net": "^1.10.15",
+    "datatables.net-dt": "^1.10.15",
+    "jquery": "^3.2.1",
+    "jspm": "^0.16.53",
     "mydatepicker": "^2.0.20",
     "reflect-metadata": "^0.1.10",
     "rxjs": "5.0.0-beta.12",
@@ -36,10 +43,22 @@
     "zone.js": "^0.7.8"
   },
   "devDependencies": {
-    "concurrently": "^3.4.0",
-    "lite-server": "^2.3.0",
-    "typescript": "^2.4.0",
-    "tslint": "4.2.0",
-    "typings": "^1.5.0"
+    "babel": "npm:babel-core@^5.8.24",
+    "babel-runtime": "npm:babel-runtime@^5.8.24",
+    "core-js": "npm:core-js@^1.1.4"
+  },
+  "externals": {
+    "jquery": {
+      "path": "https://code.jquery.com/jquery-3.1.0.min.js",
+      "globalName": "jQuery"
+    }
+  },
+  "jspm": {
+    "dependencies": {
+      "datatables.net": "npm:datatables.net@^1.10.15"
+    },
+    "devDependencies": {
+      "typescript": "npm:typescript@^2.0.7"
+    }
   }
 }

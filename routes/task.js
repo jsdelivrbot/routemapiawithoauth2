@@ -10,18 +10,17 @@ var urls = require('../config');
  
 var url = urls.url; 
 
+var bcrypt = require('bcrypt');
 
-
-
-// complete task
-router.get('/task',function(req,res,next){
+// get customer
+router.get('/getcustomer',function(req,res,next){
     // find everything 
 
 
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
-  db.collection('user').find().toArray(function (err, result) {
+  db.collection('users').find({usertype:2}).toArray(function (err, result) {
     if (err) throw err
 
     res.json(result);
@@ -33,14 +32,14 @@ MongoClient.connect(url, function (err, db) {
 
 
 // single task
-router.get('/task/:id',function(req,res,next){
+router.get('/getcustomer/:id',function(req,res,next){
     // find everything 
 
 
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
-  db.collection('user').findOne({_id: ObjectID(req.params.id)} ,function (err, results) {
+  db.collection('users').findOne({_id: ObjectID(req.params.id)} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
@@ -53,9 +52,21 @@ MongoClient.connect(url, function (err, db) {
 
 
 // save task
-router.post('/task',function(req,res,next){
+router.post('/addcustomer',function(req,res,next){
+res.setHeader('Content-Type', 'application/json')
 var task = req.body;
-if(!task.title || (task.isDone + ''))
+var username = req.body['name'];
+var password = req.body['password'];
+var email = req.body['email'];
+var code = req.body['code'];
+var address = req.body['address'];
+var phone = req.body['phone'];
+var location = req.body['location'];
+var api = req.body['api'];
+ 
+
+
+if((!task.code) || (!task.name)|| (!task.location)|| (!task.phone)|| (!task.password)|| (!task.api)||(!task.address))
 {
 
 res.status(400)
@@ -66,28 +77,40 @@ res.json({
 )
 }else{
 
-   MongoClient.connect(url, function (err, db) {
-  if (err) throw err
 
-  db.collection('user').save(task ,function (err, results) {
+bcrypt.hash(password, 11, function (err, hash) {
+                    
+                  
+MongoClient.connect(url, function (err, db) {
+  if (err) throw err
+db.collection('users').findOne({username: username}, function (err, user) {
+            if(user) {
+                res.send("Username is already taken", 422)
+            }else{
+
+  db.collection('users').save({username: username, password: hash , code : code,email:email,address:address,phone:phone,location:location,usertype:2,api:api} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
     
   })
+            }
 })
-}  
+  })
+               })  
+ }
+
 });
 
 // delete task
-router.delete('/task/:id',function(req,res,next){
+router.delete('/removecustomer/:id',function(req,res,next){
     // find everything 
 
 
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
-  db.collection('user').remove({_id: ObjectID(req.params.id)} ,function (err, results) {
+  db.collection('users').remove({_id: ObjectID(req.params.id)} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
@@ -98,22 +121,24 @@ MongoClient.connect(url, function (err, db) {
 });
 
 
-// update task
+// update customer
 
-router.put('/task/:id',function(req,res,next){
+router.put('/updatecustomer/:id',function(req,res,next){
 
 var task = req.body;
-var updtask= {};
 
-if(task.isDone){
-    updtask.isDone = task.isDone; 
-} 
+var username = req.body['name'];
+var password = req.body['password'];
+var email = req.body['email'];
+var code = req.body['code'];
+var address = req.body['address'];
+var phone = req.body['phone'];
+var location = req.body['location'];
+var api = req.body['api'];
 
-if(task.title){
-    updtask.title = task.title; 
-} 
 
-if(!updtask){
+if((!task.code) || (!task.name)|| (!task.location)|| (!task.phone)|| (!task.password)|| (!task.api)||(!task.address))
+{
 res.status(400)
 res.json({
 "error":"Bad data"
@@ -121,17 +146,18 @@ res.json({
 )
 }else{
 
+bcrypt.hash(password, 11, function (err, hash) {
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
-  db.collection('user').update({_id: ObjectID(req.params.id)},updtask,{} ,function (err, results) {
+  db.collection('users').update({_id: ObjectID(req.params.id)},{$set:{username: username, password: hash , code : code,email:email,address:address,phone:phone,location:location,usertype:2,api:api}} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
     
   })
 })
-
+})
 }
 
 });

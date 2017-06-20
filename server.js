@@ -21,7 +21,7 @@ var tasks = require('./routes/task');
 
 var app = express();
 
-var port = 5000;
+var port = 4000;
 
 //view Engine
 
@@ -36,16 +36,13 @@ app.use(express.static(path.join(__dirname,'client')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(expressValidator());
+app.use(passport.initialize())
 
-app.use('/api',tasks);
 
+app.use('/api',passport.authenticate('accessToken', { session: false }),tasks);
 
 app.use('/',index);
 
-
-
-
-app.use(passport.initialize())
 
 app.post('/oauth/token', oauth.token)
 

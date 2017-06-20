@@ -39,20 +39,20 @@ var appRoutes = [
 var AppModule = (function () {
     function AppModule() {
     }
-    AppModule = __decorate([
-        core_1.NgModule({
-            imports: [platform_browser_1.BrowserModule, http_1.HttpModule, forms_1.FormsModule, mydatepicker_1.MyDatePickerModule, core_2.AgmCoreModule.forRoot({
-                    apiKey: 'AIzaSyDJSftDw2ZAC-PU9AXx0u7UVhbKGqO90j0'
-                }), router_1.RouterModule.forRoot(appRoutes)],
-            declarations: [app_component_1.AppComponent, tasks_component_1.TasksComponent, customer_component_1.CustomerComponent, admin_component_1.AdminComponent, pagenotfound_component_1.pageNotFoundComponent],
-            providers: [
-                auth_service_1.AuthService,
-                auth_guard_1.CanActivateViaAuthGuard, auth_deguard_1.ConfirmDeactivateGuard, auth_guard_admin_1.CanActivateViaAuthGuardAdmin
-            ],
-            bootstrap: [app_component_1.AppComponent]
-        })
-    ], AppModule);
     return AppModule;
 }());
+AppModule = __decorate([
+    core_1.NgModule({
+        imports: [platform_browser_1.BrowserModule, http_1.HttpModule, forms_1.FormsModule, mydatepicker_1.MyDatePickerModule, core_2.AgmCoreModule.forRoot({
+                apiKey: 'AIzaSyDJSftDw2ZAC-PU9AXx0u7UVhbKGqO90j0'
+            }), router_1.RouterModule.forRoot(appRoutes)],
+        declarations: [app_component_1.AppComponent, tasks_component_1.TasksComponent, customer_component_1.CustomerComponent, admin_component_1.AdminComponent, pagenotfound_component_1.pageNotFoundComponent],
+        providers: [
+            auth_service_1.AuthService,
+            auth_guard_1.CanActivateViaAuthGuard, auth_deguard_1.ConfirmDeactivateGuard, auth_guard_admin_1.CanActivateViaAuthGuardAdmin
+        ],
+        bootstrap: [app_component_1.AppComponent]
+    })
+], AppModule);
 exports.AppModule = AppModule;
 //# sourceMappingURL=app.module.js.map

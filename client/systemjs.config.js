@@ -25,7 +25,10 @@
       'rxjs':                      'npm:rxjs',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api',
       'mydatepicker': 'npm:mydatepicker/bundles/mydatepicker.umd.min.js',
-      'angular2-google-maps/core': 'npm:angular2-google-maps/core/core.umd.js'
+      'angular2-google-maps/core': 'npm:angular2-google-maps/core/core.umd.js',
+      'js-base64': 'node_modules/js-base64/base64.js',
+      'jquery' : 'node_modules/jquery/dist/jquery.min.js',
+      'datatables.net':'node_modules/datatables.net/js/jquery.dataTables.js'
     
   
 

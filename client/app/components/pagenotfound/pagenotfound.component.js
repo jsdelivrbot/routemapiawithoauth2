@@ -13,13 +13,13 @@ var core_1 = require("@angular/core");
 var pageNotFoundComponent = (function () {
     function pageNotFoundComponent() {
     }
-    pageNotFoundComponent = __decorate([
-        core_1.Component({
-            template: '<h2>Page not found , statsus 404 error</h2>'
-        }),
-        __metadata("design:paramtypes", [])
-    ], pageNotFoundComponent);
     return pageNotFoundComponent;
 }());
+pageNotFoundComponent = __decorate([
+    core_1.Component({
+        template: '<h2>Page not found , statsus 404 error</h2>'
+    }),
+    __metadata("design:paramtypes", [])
+], pageNotFoundComponent);
 exports.pageNotFoundComponent = pageNotFoundComponent;
 //# sourceMappingURL=pagenotfound.component.js.map

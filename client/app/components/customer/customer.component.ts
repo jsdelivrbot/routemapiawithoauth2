@@ -2,7 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import {Task} from '../../../Task';
 import {IMyDpOptions} from 'mydatepicker';
 import { Router } from '@angular/router';
-
+import { Http, Headers} from '@angular/http';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/map';
+import {Observable} from 'rxjs/Observable';
+import {API} from './../../api_config/api_config';
+import {Base64} from 'js-base64';
+import "jquery";
+import 'datatables.net';
 
 @Component({
   moduleId: module.id,
@@ -78,8 +85,14 @@ markerDragEnd(m: marker, $event: MouseEvent) {
         public model: Object;
          
 
-constructor(private router: Router){
-       this.date();      
+constructor(private router: Router,public http:Http){
+       this.date();  
+       $(document).ready( function () {
+    $('#example').DataTable();
+} );
+       $(document).ready( function () {
+    $('#areaexample').DataTable();
+} );        
    }
 
 ngOnInit(){
@@ -98,6 +111,23 @@ var today = new Date();
 this.model= { date: { year: this.yyyy, month: this.mm, day: this.dd } };
 }
 
+onAreacode(){
+var client= document.getElementById('client');
+var employee = document.getElementById('employee');
+var servicereq = document.getElementById('servicereq');
+var serviceplan = document.getElementById('serviceplan');
+var servicelist = document.getElementById('servicelist');
+var addserviceplan = document.getElementById('addserviceplan');
+addserviceplan.style.display="none";
+var area = document.getElementById('area');
+area.style.display="block";
+servicelist.style.display="none";
+serviceplan.style.display="none";
+servicereq.style.display="none";
+client.style.display="none";
+employee.style.display="none";
+
+}
 
 onEmployee(){
 var client= document.getElementById('client');
@@ -107,6 +137,8 @@ var serviceplan = document.getElementById('serviceplan');
 var servicelist = document.getElementById('servicelist');
 var addserviceplan = document.getElementById('addserviceplan');
 addserviceplan.style.display="none";
+var area = document.getElementById('area');
+area.style.display="none";
 servicelist.style.display="none";
 serviceplan.style.display="none";
 servicereq.style.display="none";
@@ -123,6 +155,8 @@ var serviceplan = document.getElementById('serviceplan');
 var servicelist = document.getElementById('servicelist');
 var addserviceplan = document.getElementById('addserviceplan');
 addserviceplan.style.display="none";
+var area = document.getElementById('area');
+area.style.display="none";
 servicelist.style.display="none";
 serviceplan.style.display="none";
 servicereq.style.display="none";
@@ -138,6 +172,8 @@ var serviceplan = document.getElementById('serviceplan');
 var servicelist = document.getElementById('servicelist');
 var addserviceplan = document.getElementById('addserviceplan');
 addserviceplan.style.display="none";
+var area = document.getElementById('area');
+area.style.display="none";
 servicelist.style.display="none";
 serviceplan.style.display="none";
 servicereq.style.display="block";
@@ -153,6 +189,8 @@ var serviceplan = document.getElementById('serviceplan');
 var servicelist = document.getElementById('servicelist');
 var addserviceplan = document.getElementById('addserviceplan');
 addserviceplan.style.display="none";
+var area = document.getElementById('area');
+area.style.display="none";
 servicelist.style.display="none";
 serviceplan.style.display="block";
 servicereq.style.display="none";
@@ -170,6 +208,8 @@ var serviceplan = document.getElementById('serviceplan');
 var servicelist = document.getElementById('servicelist');
 var addserviceplan = document.getElementById('addserviceplan');
 addserviceplan.style.display="none";
+var area = document.getElementById('area');
+area.style.display="none";
 servicelist.style.display="block";
 serviceplan.style.display="none";
 servicereq.style.display="none";
@@ -189,6 +229,8 @@ var serviceplan = document.getElementById('serviceplan');
 var servicelist = document.getElementById('servicelist');
 var addserviceplan = document.getElementById('addserviceplan');
 addserviceplan.style.display="block";
+var area = document.getElementById('area');
+area.style.display="none";
 servicelist.style.display="none";
 serviceplan.style.display="none";
 servicereq.style.display="none";
@@ -204,6 +246,14 @@ sessionStorage.removeItem('currentUser');
 this.router.navigate(['/login']);
 
 }
+
+dismiss(){
+    var notify = document.getElementById('alerttag');
+    notify.style.display='none';
+}
+
+
+
 }
 interface marker {
 	lat: number;

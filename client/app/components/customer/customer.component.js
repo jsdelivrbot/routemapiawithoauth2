@@ -11,9 +11,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
+var http_1 = require("@angular/http");
+require("rxjs/add/operator/catch");
+require("rxjs/add/operator/map");
+require("jquery");
+require("datatables.net");
 var CustomerComponent = (function () {
-    function CustomerComponent(router) {
+    function CustomerComponent(router, http) {
         this.router = router;
+        this.http = http;
         // google maps zoom level
         this.zoom = 8;
         // initial center position for the map
@@ -51,6 +57,12 @@ var CustomerComponent = (function () {
             dateFormat: 'dd/mm/yyyy',
         };
         this.date();
+        $(document).ready(function () {
+            $('#example').DataTable();
+        });
+        $(document).ready(function () {
+            $('#areaexample').DataTable();
+        });
     }
     CustomerComponent.prototype.clickedMarker = function (label, index) {
         console.log("clicked the marker: " + (label || index));
@@ -69,6 +81,22 @@ var CustomerComponent = (function () {
         this.yyyy = today.getFullYear();
         this.model = { date: { year: this.yyyy, month: this.mm, day: this.dd } };
     };
+    CustomerComponent.prototype.onAreacode = function () {
+        var client = document.getElementById('client');
+        var employee = document.getElementById('employee');
+        var servicereq = document.getElementById('servicereq');
+        var serviceplan = document.getElementById('serviceplan');
+        var servicelist = document.getElementById('servicelist');
+        var addserviceplan = document.getElementById('addserviceplan');
+        addserviceplan.style.display = "none";
+        var area = document.getElementById('area');
+        area.style.display = "block";
+        servicelist.style.display = "none";
+        serviceplan.style.display = "none";
+        servicereq.style.display = "none";
+        client.style.display = "none";
+        employee.style.display = "none";
+    };
     CustomerComponent.prototype.onEmployee = function () {
         var client = document.getElementById('client');
         var employee = document.getElementById('employee');
@@ -77,6 +105,8 @@ var CustomerComponent = (function () {
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
         addserviceplan.style.display = "none";
+        var area = document.getElementById('area');
+        area.style.display = "none";
         servicelist.style.display = "none";
         serviceplan.style.display = "none";
         servicereq.style.display = "none";
@@ -91,6 +121,8 @@ var CustomerComponent = (function () {
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
         addserviceplan.style.display = "none";
+        var area = document.getElementById('area');
+        area.style.display = "none";
         servicelist.style.display = "none";
         serviceplan.style.display = "none";
         servicereq.style.display = "none";
@@ -105,6 +137,8 @@ var CustomerComponent = (function () {
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
         addserviceplan.style.display = "none";
+        var area = document.getElementById('area');
+        area.style.display = "none";
         servicelist.style.display = "none";
         serviceplan.style.display = "none";
         servicereq.style.display = "block";
@@ -119,6 +153,8 @@ var CustomerComponent = (function () {
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
         addserviceplan.style.display = "none";
+        var area = document.getElementById('area');
+        area.style.display = "none";
         servicelist.style.display = "none";
         serviceplan.style.display = "block";
         servicereq.style.display = "none";
@@ -133,6 +169,8 @@ var CustomerComponent = (function () {
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
         addserviceplan.style.display = "none";
+        var area = document.getElementById('area');
+        area.style.display = "none";
         servicelist.style.display = "block";
         serviceplan.style.display = "none";
         servicereq.style.display = "none";
@@ -147,6 +185,8 @@ var CustomerComponent = (function () {
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
         addserviceplan.style.display = "block";
+        var area = document.getElementById('area');
+        area.style.display = "none";
         servicelist.style.display = "none";
         serviceplan.style.display = "none";
         servicereq.style.display = "none";
@@ -157,16 +197,20 @@ var CustomerComponent = (function () {
         sessionStorage.removeItem('currentUser');
         this.router.navigate(['/login']);
     };
-    CustomerComponent = __decorate([
-        core_1.Component({
-            moduleId: module.id,
-            selector: 'tasks',
-            templateUrl: './customer.component.html',
-            styles: ["\n    .sebm-google-map-container {\n       height: 300px;\n     }\n  "]
-        }),
-        __metadata("design:paramtypes", [router_1.Router])
-    ], CustomerComponent);
+    CustomerComponent.prototype.dismiss = function () {
+        var notify = document.getElementById('alerttag');
+        notify.style.display = 'none';
+    };
     return CustomerComponent;
 }());
+CustomerComponent = __decorate([
+    core_1.Component({
+        moduleId: module.id,
+        selector: 'tasks',
+        templateUrl: './customer.component.html',
+        styles: ["\n    .sebm-google-map-container {\n       height: 300px;\n     }\n  "]
+    }),
+    __metadata("design:paramtypes", [router_1.Router, http_1.Http])
+], CustomerComponent);
 exports.CustomerComponent = CustomerComponent;
 //# sourceMappingURL=customer.component.js.map
