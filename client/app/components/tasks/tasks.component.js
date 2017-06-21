@@ -49,6 +49,7 @@ var TasksComponent = (function () {
             // get access token
             var urlaccess = api_config_1.API.API_AccessToken;
             var body2 = "username=" + this.name + "&password=" + this.password + '&grant_type=password';
+            sessionStorage.setItem('username', this.name);
             var authdata = btoa('test' + ':' + 'secret');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -76,6 +77,7 @@ var TasksComponent = (function () {
             // get access token
             var urlaccess = api_config_1.API.API_AccessToken;
             var body2 = "username=" + this.name + "&password=" + this.password + '&grant_type=password';
+            sessionStorage.setItem('username', this.name);
             var authdata = btoa('test' + ':' + 'secret');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',

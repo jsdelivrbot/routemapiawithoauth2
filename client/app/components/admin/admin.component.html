@@ -14,7 +14,7 @@
 <div class="col-lg-3 col-md-3 col-sm-4" style="width: 30%">
             <div class="list-group table-of-contents">
               <a class="list-group-item" (click)="home()">customer</a>
-              <a class="list-group-item" href="#buttons">change password</a>
+              <a class="list-group-item" (click)="changepassword()">change password</a>
               <a class="list-group-item" (click)="logout()">Logout</a>
             
             </div>
@@ -60,7 +60,7 @@
                   <div class="form-group">
                     <label for="inputEmail" class="col-lg-2 control-label">Code</label>
                     <div class="col-lg-10">
-                      <input type="text" name='code' class="form-control" id="code" placeholder="Code" [(ngModel)]="code" required>
+                      <input type="text" name='code' class="form-control" id="code" placeholder="Code" [(ngModel)]="code" required autofocus>
                     </div>
 
                   </div>
@@ -146,7 +146,7 @@
                   <div class="form-group">
                     <label for="inputEmail" class="col-lg-2 control-label">Code</label>
                     <div class="col-lg-10">
-                      <input type="text" name='code'   class="form-control" id="code" placeholder="Code" [(ngModel)]="code" required>
+                      <input type="text" name='code'   class="form-control" id="code" placeholder="Code" [(ngModel)]="code" required autofocus>
                     </div>
 
                   </div>
@@ -224,7 +224,59 @@
 </div>
 
 
+<!--change password-->
 
+
+<div id="changepassword" style="display: none">
+<div class="well bs-component">
+              <form class="form-horizontal">
+                <fieldset>
+                  <legend>Change Password</legend>
+       
+
+                  <div class="form-group">
+                    <label for="inputPassword" class="col-lg-2 control-label">Current Password</label>
+                    <div class="col-lg-10">
+                      <input type="password" class="form-control"  name='password' id="inputPassword3" placeholder="Password" [(ngModel)]="currentpassword" required autofocus>
+                      
+                    </div>
+                  </div>
+
+                              <div class="form-group">
+                    <label for="inputPassword" class="col-lg-2 control-label">New Password</label>
+                    <div class="col-lg-10">
+                      <input type="password" class="form-control"  name='password' id="inputPassword" placeholder="Password" [(ngModel)]="newpassword" required>
+                      
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="inputPassword" class="col-lg-2 control-label">Confirm Password</label>
+                    <div class="col-lg-10">
+                      <input type="password" class="form-control"  name='cpassword' id="inputPassword2" placeholder="Password" [(ngModel)]="cnewpassword" required>
+                    <p id="validate-status"></p>  
+                    </div>
+                    
+                  </div>
+
+
+              
+                  
+                  
+               <div class="form-group">
+                    <div class="col-lg-10 col-lg-offset-2">
+                      <button type="reset" class="btn btn-default" (click)="home();">Cancel</button>
+                      <button type="submit" class="btn btn-primary" (click)="passwordForm()">Submit</button>
+                    </div>
+                  </div>
+                </fieldset>
+                <div id='notifyss' class="alert alert-dismissible alert-danger" style="display: none">
+                <strong>Something went wrong..username may be already registered please try again</strong> 
+              </div>  
+              </form>
+     
+</div>
+</div>
 
 
 

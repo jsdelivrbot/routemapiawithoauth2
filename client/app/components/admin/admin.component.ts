@@ -41,6 +41,10 @@ export class AdminComponent implements OnInit{
     public display:any;
     public current:any;
     public editdisplay:any;
+    public currentpassword:any;
+    public newpassword:any;
+    public cnewpassword:any;
+
 
 // on init
     ngOnInit(){
@@ -61,12 +65,16 @@ this.loaddata();
 
 // home page
 home(){
+     var notify = document.getElementById('alerttag');
+    notify.style.display='none';
   var notify = document.getElementById('addcustomer');
     notify.style.display='none';
     var main = document.getElementById('adminmain');
 main.style.display='block';
 var displass = document.getElementById('editcustomer')
     displass.style.display = 'none';
+    var changepassword = document.getElementById('changepassword')
+    changepassword.style.display='none'
 this.loaddata();
 }
 
@@ -74,11 +82,14 @@ this.loaddata();
 
 // add customer plus button functionality
  addcustomer(){
-
+ var notify = document.getElementById('alerttag');
+    notify.style.display='none';
 var main = document.getElementById('adminmain');
 main.style.display='none';
   var notify = document.getElementById('addcustomer');
     notify.style.display='block';
+    var changepassword = document.getElementById('changepassword')
+    changepassword.style.display='none'
     this.code='';
        this.name="";
        this.password="";
@@ -270,6 +281,8 @@ edit(id){
     notify.style.display='none';
     var displass = document.getElementById('editcustomer')
     displass.style.display = 'block';
+    var changepassword = document.getElementById('changepassword')
+    changepassword.style.display='none'
     this.loadsingledata(id); 
 
    
@@ -333,11 +346,62 @@ $("#notifyss").show();
 
 
 
+passwordForm(){
+
+if(this.cnewpassword == this.newpassword){
+
+       let urlaccess = API.API_UpdatePassword;
+             let body2 ="name="+this.name+"&password="+this.newpassword+'&oldpassword='+this.currentpassword;
+             this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+    
+            this.http.put(urlaccess, body2, {headers : head2})
+            .map(res =>  res.json()).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        })
+       .subscribe(data => {
+      this.home();            
+        this.router.navigate(['/admin']);   
+     }, error => {
+       if(error=="Unauthorized"){
+       console.log(error);
+       alert(error);
+    
+  }
+  // var notify = document.getElementById('notifys');
+    //  notify.style.display = 'block';
+  
+  $("#notifyss").show();
+  setTimeout(function() { $("#notifyss").hide(); }, 5000);
+   
+     
+               console.log(error);
+             
+            });
+}
+}
 
 
+changepassword(){
 
+  var notify = document.getElementById('alerttag');
+    notify.style.display='none';
+  var notify = document.getElementById('addcustomer');
+    notify.style.display='none';
+    var main = document.getElementById('adminmain');
+main.style.display='none';
+var displass = document.getElementById('editcustomer')
+    displass.style.display = 'none';
+    var changepassword = document.getElementById('changepassword')
+    changepassword.style.display='block'
 
-
+}
 
 }
 

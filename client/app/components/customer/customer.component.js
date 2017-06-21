@@ -14,6 +14,8 @@ var router_1 = require("@angular/router");
 var http_1 = require("@angular/http");
 require("rxjs/add/operator/catch");
 require("rxjs/add/operator/map");
+var Observable_1 = require("rxjs/Observable");
+var api_config_1 = require("./../../api_config/api_config");
 require("jquery");
 require("datatables.net");
 var CustomerComponent = (function () {
@@ -63,6 +65,15 @@ var CustomerComponent = (function () {
         $(document).ready(function () {
             $('#areaexample').DataTable();
         });
+        $(document).ready(function () {
+            $('#example3').DataTable();
+        });
+        $(document).ready(function () {
+            $('#example4').DataTable();
+        });
+        $(document).ready(function () {
+            $('#example5').DataTable();
+        });
     }
     CustomerComponent.prototype.clickedMarker = function (label, index) {
         console.log("clicked the marker: " + (label || index));
@@ -73,6 +84,8 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.ngOnInit = function () {
         //called after the constructor and called  after the first ngOnChanges() 
         this.date();
+        var notify = document.getElementById('alerttag');
+        notify.style.display = 'block';
     };
     CustomerComponent.prototype.date = function () {
         var today = new Date();
@@ -88,9 +101,125 @@ var CustomerComponent = (function () {
         var serviceplan = document.getElementById('serviceplan');
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
+        var areacode = document.getElementById('addareacode');
+        var addemployee = document.getElementById('addemployees');
+        var addclient = document.getElementById('addclient');
+        var notify = document.getElementById('alerttag');
+        var service = document.getElementById('addservice');
+        service.style.display = 'none';
+        notify.style.display = 'none';
+        addclient.style.display = 'none';
+        addemployee.style.display = 'none';
+        areacode.style.display = 'none';
         addserviceplan.style.display = "none";
         var area = document.getElementById('area');
         area.style.display = "block";
+        servicelist.style.display = "none";
+        serviceplan.style.display = "none";
+        servicereq.style.display = "none";
+        client.style.display = "none";
+        employee.style.display = "none";
+    };
+    CustomerComponent.prototype.addAreacodestyle = function () {
+        var client = document.getElementById('client');
+        var employee = document.getElementById('employee');
+        var servicereq = document.getElementById('servicereq');
+        var serviceplan = document.getElementById('serviceplan');
+        var servicelist = document.getElementById('servicelist');
+        var addserviceplan = document.getElementById('addserviceplan');
+        var areacode = document.getElementById('addareacode');
+        var addemployee = document.getElementById('addemployees');
+        var notify = document.getElementById('alerttag');
+        notify.style.display = 'none';
+        addemployee.style.display = 'none';
+        areacode.style.display = 'block';
+        addserviceplan.style.display = "none";
+        var area = document.getElementById('area');
+        area.style.display = "none";
+        servicelist.style.display = "none";
+        serviceplan.style.display = "none";
+        servicereq.style.display = "none";
+        client.style.display = "none";
+        employee.style.display = "none";
+    };
+    CustomerComponent.prototype.addemployestyle = function () {
+        var client = document.getElementById('client');
+        var employee = document.getElementById('employee');
+        var servicereq = document.getElementById('servicereq');
+        var serviceplan = document.getElementById('serviceplan');
+        var servicelist = document.getElementById('servicelist');
+        var addserviceplan = document.getElementById('addserviceplan');
+        var areacode = document.getElementById('addareacode');
+        var addemployee = document.getElementById('addemployees');
+        var addclient = document.getElementById('addclient');
+        var notify = document.getElementById('alerttag');
+        var service = document.getElementById('addservice');
+        service.style.display = 'none';
+        notify.style.display = 'none';
+        addclient.style.display = 'none';
+        addemployee.style.display = 'block';
+        areacode.style.display = 'none';
+        addserviceplan.style.display = "none";
+        var area = document.getElementById('area');
+        area.style.display = "none";
+        servicelist.style.display = "none";
+        serviceplan.style.display = "none";
+        servicereq.style.display = "none";
+        client.style.display = "none";
+        employee.style.display = "none";
+    };
+    CustomerComponent.prototype.addclientstyle = function () {
+        var client = document.getElementById('client');
+        var employee = document.getElementById('employee');
+        var servicereq = document.getElementById('servicereq');
+        var serviceplan = document.getElementById('serviceplan');
+        var servicelist = document.getElementById('servicelist');
+        var addserviceplan = document.getElementById('addserviceplan');
+        var areacode = document.getElementById('addareacode');
+        var addemployee = document.getElementById('addemployees');
+        var addclient = document.getElementById('addclient');
+        var addclient = document.getElementById('addclient');
+        var notify = document.getElementById('alerttag');
+        var service = document.getElementById('addservice');
+        service.style.display = 'none';
+        notify.style.display = 'none';
+        addclient.style.display = 'none';
+        addclient.style.display = 'block';
+        addemployee.style.display = 'none';
+        areacode.style.display = 'none';
+        addserviceplan.style.display = "none";
+        var area = document.getElementById('area');
+        area.style.display = "none";
+        servicelist.style.display = "none";
+        serviceplan.style.display = "none";
+        servicereq.style.display = "none";
+        client.style.display = "none";
+        employee.style.display = "none";
+    };
+    CustomerComponent.prototype.addservicestyle = function () {
+        var client = document.getElementById('client');
+        var employee = document.getElementById('employee');
+        var servicereq = document.getElementById('servicereq');
+        var serviceplan = document.getElementById('serviceplan');
+        var servicelist = document.getElementById('servicelist');
+        var addserviceplan = document.getElementById('addserviceplan');
+        var areacode = document.getElementById('addareacode');
+        var addemployee = document.getElementById('addemployees');
+        var addclient = document.getElementById('addclient');
+        var addclient = document.getElementById('addclient');
+        var notify = document.getElementById('alerttag');
+        var service = document.getElementById('addservice');
+        var service = document.getElementById('addservice');
+        service.style.display = 'none';
+        service.style.display = 'block';
+        notify.style.display = 'none';
+        addclient.style.display = 'none';
+        addclient.style.display = 'none';
+        addemployee.style.display = 'none';
+        areacode.style.display = 'none';
+        addserviceplan.style.display = "none";
+        var area = document.getElementById('area');
+        area.style.display = "none";
         servicelist.style.display = "none";
         serviceplan.style.display = "none";
         servicereq.style.display = "none";
@@ -104,6 +233,16 @@ var CustomerComponent = (function () {
         var serviceplan = document.getElementById('serviceplan');
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
+        var areacode = document.getElementById('addareacode');
+        var addemployee = document.getElementById('addemployees');
+        var addclient = document.getElementById('addclient');
+        var notify = document.getElementById('alerttag');
+        var service = document.getElementById('addservice');
+        service.style.display = 'none';
+        notify.style.display = 'none';
+        addclient.style.display = 'none';
+        addemployee.style.display = 'none';
+        areacode.style.display = 'none';
         addserviceplan.style.display = "none";
         var area = document.getElementById('area');
         area.style.display = "none";
@@ -120,6 +259,14 @@ var CustomerComponent = (function () {
         var serviceplan = document.getElementById('serviceplan');
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
+        var addemployee = document.getElementById('addemployees');
+        var addclient = document.getElementById('addclient');
+        var notify = document.getElementById('alerttag');
+        var service = document.getElementById('addservice');
+        service.style.display = 'none';
+        notify.style.display = 'none';
+        addclient.style.display = 'none';
+        addemployee.style.display = 'none';
         addserviceplan.style.display = "none";
         var area = document.getElementById('area');
         area.style.display = "none";
@@ -136,6 +283,16 @@ var CustomerComponent = (function () {
         var serviceplan = document.getElementById('serviceplan');
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
+        var areacode = document.getElementById('addareacode');
+        var addemployee = document.getElementById('addemployees');
+        var addclient = document.getElementById('addclient');
+        var notify = document.getElementById('alerttag');
+        var service = document.getElementById('addservice');
+        service.style.display = 'none';
+        notify.style.display = 'none';
+        addclient.style.display = 'none';
+        addemployee.style.display = 'none';
+        areacode.style.display = 'none';
         addserviceplan.style.display = "none";
         var area = document.getElementById('area');
         area.style.display = "none";
@@ -152,6 +309,16 @@ var CustomerComponent = (function () {
         var serviceplan = document.getElementById('serviceplan');
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
+        var areacode = document.getElementById('addareacode');
+        var addemployee = document.getElementById('addemployees');
+        var addclient = document.getElementById('addclient');
+        var notify = document.getElementById('alerttag');
+        var service = document.getElementById('addservice');
+        service.style.display = 'none';
+        notify.style.display = 'none';
+        addclient.style.display = 'none';
+        addemployee.style.display = 'none';
+        areacode.style.display = 'none';
         addserviceplan.style.display = "none";
         var area = document.getElementById('area');
         area.style.display = "none";
@@ -168,6 +335,16 @@ var CustomerComponent = (function () {
         var serviceplan = document.getElementById('serviceplan');
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
+        var areacode = document.getElementById('addareacode');
+        var addemployee = document.getElementById('addemployees');
+        var addclient = document.getElementById('addclient');
+        var notify = document.getElementById('alerttag');
+        var service = document.getElementById('addservice');
+        service.style.display = 'none';
+        notify.style.display = 'none';
+        addclient.style.display = 'none';
+        addemployee.style.display = 'none';
+        areacode.style.display = 'none';
         addserviceplan.style.display = "none";
         var area = document.getElementById('area');
         area.style.display = "none";
@@ -184,6 +361,16 @@ var CustomerComponent = (function () {
         var serviceplan = document.getElementById('serviceplan');
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
+        var areacode = document.getElementById('addareacode');
+        var addemployee = document.getElementById('addemployees');
+        var addclient = document.getElementById('addclient');
+        var notify = document.getElementById('alerttag');
+        var service = document.getElementById('addservice');
+        service.style.display = 'none';
+        notify.style.display = 'none';
+        addclient.style.display = 'none';
+        addemployee.style.display = 'none';
+        areacode.style.display = 'none';
         addserviceplan.style.display = "block";
         var area = document.getElementById('area');
         area.style.display = "none";
@@ -195,11 +382,167 @@ var CustomerComponent = (function () {
     };
     CustomerComponent.prototype.logout = function () {
         sessionStorage.removeItem('currentUser');
+        sessionStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
         this.router.navigate(['/login']);
     };
     CustomerComponent.prototype.dismiss = function () {
         var notify = document.getElementById('alerttag');
         notify.style.display = 'none';
+    };
+    CustomerComponent.prototype.addareacode = function () {
+        this.addAreacodestyle();
+    };
+    CustomerComponent.prototype.areaForm = function () {
+        var _this = this;
+        // update area code form
+        if (this.code != '' && this.areaname != '' && this.location != '') {
+            var url = api_config_1.API.API_AddAreacode;
+            var body2 = "code=" + this.code + "&areaname=" + this.areaname + '&location=' + this.location;
+            this.accesstoken = sessionStorage.getItem('access_token');
+            var head2 = new http_1.Headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Bearer ' + this.accesstoken
+            });
+            this.http.post(url, body2, { headers: head2 })
+                .map(function (res) { return res.json(); }).catch(function (e) {
+                if (e.status === 401) {
+                    return Observable_1.Observable.throw('Unauthorized');
+                }
+                // do any other checking for statuses here
+            })
+                .subscribe(function (data) {
+                _this.onAreacode();
+                _this.router.navigate(['/customer']);
+            }, function (error) {
+                if (error == "Unauthorized") {
+                    console.log(error);
+                    alert(error);
+                }
+                // var notify = document.getElementById('notifyss');
+                //    notify.style.display = 'block';
+                $("#notifyss1").show();
+                setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                console.log(error);
+            });
+        }
+    };
+    CustomerComponent.prototype.addemployes = function () {
+        this.addemployestyle();
+    };
+    CustomerComponent.prototype.employeeForm = function () {
+        // add employee
+        var _this = this;
+        if (this.code != '' && this.areacode != '' && this.password != '' && this.name != '' && this.phone != '' && this.address != '') {
+            var url = api_config_1.API.API_AddEmployee;
+            var body2 = "code=" + this.code + "&areacode=" + this.areacode + '&name=' + this.name + '&password=' + this.password + '&phone=' + this.phone + '&address=' + this.address;
+            this.accesstoken = sessionStorage.getItem('access_token');
+            var head2 = new http_1.Headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Bearer ' + this.accesstoken
+            });
+            this.http.post(url, body2, { headers: head2 })
+                .map(function (res) { return res.json(); }).catch(function (e) {
+                if (e.status === 401) {
+                    return Observable_1.Observable.throw('Unauthorized');
+                }
+                // do any other checking for statuses here
+            })
+                .subscribe(function (data) {
+                _this.onEmployee();
+                _this.router.navigate(['/customer']);
+            }, function (error) {
+                if (error == "Unauthorized") {
+                    console.log(error);
+                    alert(error);
+                }
+                // var notify = document.getElementById('notifyss');
+                //    notify.style.display = 'block';
+                $("#notifyss1").show();
+                setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                console.log(error);
+            });
+        }
+    };
+    CustomerComponent.prototype.addclient = function () {
+        this.addclientstyle();
+        this.loadareacode();
+        this.selectedvalue = 'please select area code';
+    };
+    CustomerComponent.prototype.onChange = function (newValue) {
+        console.log(newValue);
+        this.selectedvalue = newValue;
+    };
+    CustomerComponent.prototype.clientForm = function () {
+        // add client
+        var _this = this;
+        if (this.code != '' && this.areacode != '' && this.name != '' && this.phone != '' && this.address != '' && this.mobile != '') {
+            var url = api_config_1.API.API_AddClient;
+            console.log(this.selectedvalue);
+            var body2 = "clientcode=" + this.code + "&areacode=" + this.selectedvalue + '&clientname=' + this.name + '&address=' + this.address + '&phone=' + this.phone + '&mobile=' + this.mobile + '&location=' + this.location + '&extraroadpoints=' + this.extraroadpoints;
+            this.accesstoken = sessionStorage.getItem('access_token');
+            var head2 = new http_1.Headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Bearer ' + this.accesstoken
+            });
+            this.http.post(url, body2, { headers: head2 })
+                .map(function (res) { return res.json(); }).catch(function (e) {
+                if (e.status === 401) {
+                    return Observable_1.Observable.throw('Unauthorized');
+                }
+                // do any other checking for statuses here
+            })
+                .subscribe(function (data) {
+                _this.onClient();
+                _this.router.navigate(['/customer']);
+            }, function (error) {
+                if (error == "Unauthorized") {
+                    console.log(error);
+                    alert(error);
+                }
+                // var notify = document.getElementById('notifyss');
+                //    notify.style.display = 'block';
+                $("#notifyss1").show();
+                setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                console.log(error);
+            });
+        }
+    };
+    CustomerComponent.prototype.addservice = function () {
+        this.addservicestyle();
+    };
+    CustomerComponent.prototype.serviceForm = function () {
+    };
+    CustomerComponent.prototype.loadareacode = function () {
+        var _this = this;
+        // load area code
+        console.log('loaddata arae code');
+        var url = api_config_1.API.API_GetAreacode;
+        this.accesstoken = sessionStorage.getItem('access_token');
+        var head2 = new http_1.Headers({
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Bearer ' + this.accesstoken
+        });
+        this.http.get(url, {
+            headers: head2
+        })
+            .map(function (res) {
+            return res.json();
+        }).catch(function (e) {
+            if (e.status === 401) {
+                return Observable_1.Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(function (data) {
+            console.log(JSON.stringify(data));
+            _this.areacodearray = Array();
+            _this.areacodearray = data;
+        }, function (error) {
+            if (error == "Unauthorized") {
+                alert(error);
+                console.log(error);
+            }
+        });
     };
     return CustomerComponent;
 }());

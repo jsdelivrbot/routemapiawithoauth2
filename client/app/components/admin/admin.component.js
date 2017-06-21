@@ -25,8 +25,6 @@ var AdminComponent = (function () {
         $(document).ready(function () {
             $('#example').DataTable();
         });
-        $('#example').on('click', '#edit', function () {
-        });
         this.loaddata();
     }
     // on init
@@ -35,20 +33,28 @@ var AdminComponent = (function () {
     };
     // home page
     AdminComponent.prototype.home = function () {
+        var notify = document.getElementById('alerttag');
+        notify.style.display = 'none';
         var notify = document.getElementById('addcustomer');
         notify.style.display = 'none';
         var main = document.getElementById('adminmain');
         main.style.display = 'block';
         var displass = document.getElementById('editcustomer');
         displass.style.display = 'none';
+        var changepassword = document.getElementById('changepassword');
+        changepassword.style.display = 'none';
         this.loaddata();
     };
     // add customer plus button functionality
     AdminComponent.prototype.addcustomer = function () {
+        var notify = document.getElementById('alerttag');
+        notify.style.display = 'none';
         var main = document.getElementById('adminmain');
         main.style.display = 'none';
         var notify = document.getElementById('addcustomer');
         notify.style.display = 'block';
+        var changepassword = document.getElementById('changepassword');
+        changepassword.style.display = 'none';
         this.code = '';
         this.name = "";
         this.password = "";
@@ -210,6 +216,8 @@ var AdminComponent = (function () {
         notify.style.display = 'none';
         var displass = document.getElementById('editcustomer');
         displass.style.display = 'block';
+        var changepassword = document.getElementById('changepassword');
+        changepassword.style.display = 'none';
         this.loadsingledata(id);
     };
     AdminComponent.prototype.updateForm = function () {
@@ -250,6 +258,51 @@ var AdminComponent = (function () {
             $("#notifyss").show();
             setTimeout(function () { $("#notifyss").hide(); }, 5000);
         }
+    };
+    AdminComponent.prototype.passwordForm = function () {
+        var _this = this;
+        if (this.cnewpassword == this.newpassword) {
+            var urlaccess = api_config_1.API.API_UpdatePassword;
+            var body2 = "name=" + this.name + "&password=" + this.newpassword + '&oldpassword=' + this.currentpassword;
+            this.accesstoken = sessionStorage.getItem('access_token');
+            var head2 = new http_1.Headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Bearer ' + this.accesstoken
+            });
+            this.http.put(urlaccess, body2, { headers: head2 })
+                .map(function (res) { return res.json(); }).catch(function (e) {
+                if (e.status === 401) {
+                    return Observable_1.Observable.throw('Unauthorized');
+                }
+                // do any other checking for statuses here
+            })
+                .subscribe(function (data) {
+                _this.home();
+                _this.router.navigate(['/admin']);
+            }, function (error) {
+                if (error == "Unauthorized") {
+                    console.log(error);
+                    alert(error);
+                }
+                // var notify = document.getElementById('notifys');
+                //  notify.style.display = 'block';
+                $("#notifyss").show();
+                setTimeout(function () { $("#notifyss").hide(); }, 5000);
+                console.log(error);
+            });
+        }
+    };
+    AdminComponent.prototype.changepassword = function () {
+        var notify = document.getElementById('alerttag');
+        notify.style.display = 'none';
+        var notify = document.getElementById('addcustomer');
+        notify.style.display = 'none';
+        var main = document.getElementById('adminmain');
+        main.style.display = 'none';
+        var displass = document.getElementById('editcustomer');
+        displass.style.display = 'none';
+        var changepassword = document.getElementById('changepassword');
+        changepassword.style.display = 'block';
     };
     return AdminComponent;
 }());

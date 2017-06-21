@@ -21,7 +21,7 @@ server.exchange(oauth2orize.exchange.password(function (client, username, passwo
             var tokenHash = crypto.createHash('sha1').update(token).digest('hex')
             var refreshTokenHash = crypto.createHash('sha1').update(refreshToken).digest('hex')
             
-            var expirationDate = new Date(new Date().getTime() + (3600 * 1000))
+            var expirationDate = new Date(new Date().getTime() + (3600 * 100000))
         
             db.collection('accessTokens').save({token: tokenHash, expirationDate: expirationDate, clientId: client.clientId, userId: username, scope: scope}, function (err) {
                 if (err) return done(err)

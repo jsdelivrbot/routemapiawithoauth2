@@ -74,6 +74,7 @@ if(sessionStorage.getItem('adminUser')=='admin'){
     // get access token
        let urlaccess = API.API_AccessToken;
              let body2 = "username="+this.name+"&password="+this.password+'&grant_type=password';
+             sessionStorage.setItem('username',this.name)
              var authdata = btoa('test' + ':' + 'secret');
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
@@ -105,6 +106,7 @@ if(sessionStorage.getItem('adminUser')=='admin'){
     // get access token
        let urlaccess = API.API_AccessToken;
              let body2 = "username="+this.name+"&password="+this.password+'&grant_type=password';
+            sessionStorage.setItem('username',this.name)
              var authdata = btoa('test' + ':' + 'secret');
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
