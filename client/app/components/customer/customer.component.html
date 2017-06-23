@@ -197,7 +197,9 @@
             </div>
 </div>
 
-<div class="col-lg-12" style="float: left;width: 80%;display: none" id="addserviceplan">
+
+
+<div class="col-lg-12" style="float: left;width: 70%;display: none" id="addserviceplan">
             <div class="page-header">
               <h4 id="tables"> Service Plan   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  Date:{{model.date.day}}/{{model.date.month}}/{{model.date.year}}</h4>
             </div>
@@ -206,13 +208,14 @@
 
 <!-- this creates a google map on the page with the given lat/lng from -->
 <!-- the component as the initial center of the map: -->
+<div style="width:100%;float:left">
+<div style="width:70%;float:left" >
 <sebm-google-map 
       [latitude]="lat"
       [longitude]="lng"
       [zoom]="zoom"
       [disableDefaultUI]="false"
-      [zoomControl]="true"
-      >
+      [zoomControl]="true">
     
       <sebm-google-map-marker 
           *ngFor="let m of markers; let i = index"
@@ -237,12 +240,19 @@
       </sebm-google-map-circle>
 
     </sebm-google-map>
-        
-    
-      
-</div>
+</div>   
 
+
+<div id="mapform" style="width:30%;float:left">
+  <div class="jumbotron">
+      <input class="form-control" id="focusedInput" type="text" value="This is focused...">
+      <input class="form-control" id="focusedInput" type="text" value="This is focused...">
+              </div>
+    
+</div>
+</div>
  </div>
+
 
 
 <!--add area code-->

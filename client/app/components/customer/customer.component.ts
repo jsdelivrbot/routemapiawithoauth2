@@ -259,6 +259,9 @@ var editemployee = document.getElementById('editemployee')
 var editclient   = document.getElementById('editclient')
 var editservice = document.getElementById('editservice')
 
+var mapform = document.getElementById('mapform')
+mapform.style.display= "none"
+
   var changepassword = document.getElementById('changepassword')
     changepassword.style.display='none'
 
@@ -362,6 +365,8 @@ addserviceplan.style.display="block";
 setTimeout(function(){
 window.dispatchEvent(new Event("resize"));
 }, 1);
+var mapform = document.getElementById('mapform')
+mapform.style.display= "block"
 }
 
 logout()
