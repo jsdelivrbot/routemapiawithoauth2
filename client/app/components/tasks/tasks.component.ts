@@ -89,7 +89,7 @@ if(sessionStorage.getItem('adminUser')=='admin'){
     console.log('access_token' + this.access_token +'\n refresh_token' + this.refresh_token)
         sessionStorage.setItem('access_token',this.access_token)      
         localStorage.setItem('refresh_token',this.refresh_token)    
-        sessionStorage.setItem('adminUser','admin')
+        sessionStorage.setItem('adminUser',this.name)
         this.router.navigate(['/admin']);   
      }, error => {
                console.log(error);
@@ -121,7 +121,7 @@ if(sessionStorage.getItem('adminUser')=='admin'){
     console.log('access_token' + this.access_token +'\n refresh_token' + this.refresh_token)
         sessionStorage.setItem('access_token',this.access_token)      
         localStorage.setItem('refresh_token',this.refresh_token)    
-         sessionStorage.setItem('currentUser','customer')
+         sessionStorage.setItem('currentUser',this.name)
      this.router.navigate(['/customer']);  
      }, error => {
                console.log(error);

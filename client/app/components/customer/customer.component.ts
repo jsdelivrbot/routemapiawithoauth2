@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Task} from '../../../Task';
-import {IMyDpOptions} from 'mydatepicker';
+
+import {IMyDpOptions, IMyDateModel} from 'mydatepicker';
 import { Router } from '@angular/router';
 import { Http, Headers} from '@angular/http';
 import 'rxjs/add/operator/catch';
@@ -17,10 +18,16 @@ import 'datatables.net';
   templateUrl: './customer.component.html',
   styles: [`
     .sebm-google-map-container {
-       height: 300px;
-     }
+       height: 70%;
+       width:60%;
+     },
+     "styles.css",
+   "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+   "../node_modules/bootstrap/dist/css/bootstrap-theme.min.css",
+   "../node_modules/datatables.net-bs/css/dataTables.bootstrap.css",
+   "../node_modules/datatables.net-select-bs/css/select.bootstrap.css"
   `]
-})
+  })
 
 export class CustomerComponent { 
 
@@ -51,11 +58,46 @@ public extraroadpoints:any;
 public areacodearray:any;
 public selectedvalue:any;
 public aphone:any;
+public clientdetails:any;
+    public tableWidget:any;
+    public tableWidget2:any;
+    public tableWidget3:any;
+    public tableWidget4:any;
+    public tableWidget5:any;
+    public selectedName:any;
+    public bookingdate:any;
+    public servicedate:any;
+    public requesttype:any;
+    public currentpassword:any;
+    public newpassword:any;
+    public cnewpassword:any;
+    public locationname:any;
 
-  
+
+
+    reinitializeall(){
+        this.name="";
+  this.password="";
+  this.location="";
+this.code="";
+this.areaname="";
+this.accesstoken="";
+this.areacode="";
+this.address="";
+this.phone="";
+this.mobile="";
+this.extraroadpoints="";
+ this.aphone="";
+ this.currentpassword=""
+ this.newpassword=""
+ this.cnewpassword=""
+    }
+
 clickedMarker(label: string, index: number) {
     console.log(`clicked the marker: ${label || index}`)
-  }
+    
+    this.locationname = label;  
+}
   
   
   
@@ -67,31 +109,24 @@ markerDragEnd(m: marker, $event: MouseEvent) {
 	  {
 		  lat: 51.673858,
 		  lng: 7.815982,
-		  label: 'A',
+		  label: 'source',
 		  draggable: true
 	  },
 	  {
 		  lat: 51.373858,
 		  lng: 7.215982,
-		  label: 'B',
+		  label: 'centre',
 		  draggable: false
 	  },
 	  {
 		  lat: 51.723858,
 		  lng: 7.895982,
-		  label: 'C',
+		  label: 'destination',
 		  draggable: true
 	  }
   ]
 
-// just an interface for type safety.
 
-//  mapClicked($event: MouseEvent) {
-//     this.markers.push({
-//       lat: $event.coords.lat,
-//       lng: $event.coords.lng
-//     });
-//   }
 
 
  private myDatePickerOptions: IMyDpOptions = {
@@ -104,24 +139,7 @@ markerDragEnd(m: marker, $event: MouseEvent) {
 
 constructor(private router: Router,public http:Http){
        this.date();  
-       $(document).ready( function () {
-    $('#example').DataTable();
-} );
-       $(document).ready( function () {
-    $('#areaexample').DataTable();
-} );    
 
-$(document).ready( function () {
-    $('#example3').DataTable();
-} );
-
-$(document).ready( function () {
-    $('#example4').DataTable();
-} );        
-
-$(document).ready( function () {
-    $('#example5').DataTable();
-} ); 
    }
 
 ngOnInit(){
@@ -129,7 +147,82 @@ ngOnInit(){
 this.date();      
 var notify = document.getElementById('alerttag');
     notify.style.display='block';
+this.loadareacode(); 
   }
+
+ngAfterViewInit() {
+ 
+    this.initDatatable()
+
+}
+
+ private initDatatable(): void {
+
+    let exampleId: any = $('#example');
+    this.tableWidget = exampleId.DataTable({
+      destroy: true,
+      select: true
+    });
+
+    let exampleId1: any = $('#example1');
+    this.tableWidget2 = exampleId1.DataTable({
+      destroy: true,
+      select: true
+    });
+
+
+    let exampleId2: any = $('#example2');
+    this.tableWidget3 = exampleId2.DataTable({
+      destroy: true,
+      select: true
+    });
+
+
+    let exampleId3: any = $('#example3');
+    this.tableWidget4 = exampleId3.DataTable({
+      destroy: true,
+      select: true
+    });
+
+    let exampleId4: any = $('#example4');
+    this.tableWidget5 = exampleId4.DataTable({
+      destroy: true,
+      select: true
+    });
+   
+  }
+
+
+private reInitDatatable(): void {
+    if (this.tableWidget) {
+      this.tableWidget.destroy()
+      this.tableWidget=null
+    }
+    if (this.tableWidget2) {
+      this.tableWidget2.destroy()
+      this.tableWidget2=null
+    }
+    if (this.tableWidget3) {
+      this.tableWidget3.destroy()
+      this.tableWidget3=null
+    }
+    if (this.tableWidget4) {
+      this.tableWidget4.destroy()
+      this.tableWidget4=null
+    }
+    if (this.tableWidget5) {
+      this.tableWidget5.destroy()
+      this.tableWidget5=null
+    }
+     setTimeout(() => this.initDatatable(),0)
+  }
+
+  public selectRow(index: number, row:any) {
+    this.selectedName = "row#" + index + " " + row.name
+  }
+
+
+
 
 
 
@@ -139,9 +232,16 @@ var today = new Date();
  this.mm = today.getMonth()+1; //January is 0!
  this.yyyy = today.getFullYear();
 this.model= { date: { year: this.yyyy, month: this.mm, day: this.dd } };
+this.servicedate= { date: { year: this.yyyy, month: this.mm, day: this.dd } };
+this.bookingdate= { date: { year: this.yyyy, month: this.mm, day: this.dd } };
 }
 
-onAreacode(){
+
+requestcode(){
+this.loadclientcodedetail();
+}
+
+onNone(){
 var client= document.getElementById('client');
 var employee = document.getElementById('employee');
 var servicereq = document.getElementById('servicereq');
@@ -153,6 +253,20 @@ var addemployee = document.getElementById('addemployees');
 var addclient = document.getElementById('addclient');
 var notify = document.getElementById('alerttag');
 var service = document.getElementById('addservice');
+
+var editareacode = document.getElementById('editareacode')
+var editemployee = document.getElementById('editemployee')
+var editclient   = document.getElementById('editclient')
+var editservice = document.getElementById('editservice')
+
+  var changepassword = document.getElementById('changepassword')
+    changepassword.style.display='none'
+
+editareacode.style.display = 'none'
+editemployee.style.display = 'none'
+editclient.style.display = 'none'
+editservice.style.display = 'none'
+
 service.style.display='none';
     notify.style.display='none';
 addclient.style.display='none';
@@ -160,299 +274,94 @@ addemployee.style.display='none'
 areacode.style.display='none';
 addserviceplan.style.display="none";
 var area = document.getElementById('area');
-area.style.display="block";
+area.style.display="none";
 servicelist.style.display="none";
 serviceplan.style.display="none";
 servicereq.style.display="none";
 client.style.display="none";
 employee.style.display="none";
+this.reinitializeall();
+}
 
+onAreacode(){
+this.onNone();
+var area = document.getElementById('area');
+area.style.display="block";
+this.loadareacode();
 }
 
 
 addAreacodestyle(){
-var client= document.getElementById('client');
-var employee = document.getElementById('employee');
-var servicereq = document.getElementById('servicereq');
-var serviceplan = document.getElementById('serviceplan');
-var servicelist = document.getElementById('servicelist');
-var addserviceplan = document.getElementById('addserviceplan');
+this.onNone();
 var areacode = document.getElementById('addareacode');
-var addemployee = document.getElementById('addemployees');
-var notify = document.getElementById('alerttag');
-    notify.style.display='none';
-addemployee.style.display='none'
 areacode.style.display='block';
-addserviceplan.style.display="none";
-var area = document.getElementById('area');
-area.style.display="none";
-servicelist.style.display="none";
-serviceplan.style.display="none";
-servicereq.style.display="none";
-client.style.display="none";
-employee.style.display="none";
-
 }
 
 
 addemployestyle(){
-var client= document.getElementById('client');
-var employee = document.getElementById('employee');
-var servicereq = document.getElementById('servicereq');
-var serviceplan = document.getElementById('serviceplan');
-var servicelist = document.getElementById('servicelist');
-var addserviceplan = document.getElementById('addserviceplan');
-var areacode = document.getElementById('addareacode');
+this.onNone();
 var addemployee = document.getElementById('addemployees');
-var addclient = document.getElementById('addclient');
-var notify = document.getElementById('alerttag');
-var service = document.getElementById('addservice');
-service.style.display='none';
-    notify.style.display='none';
-addclient.style.display='none';
 addemployee.style.display='block'
-areacode.style.display='none';
-addserviceplan.style.display="none";
-var area = document.getElementById('area');
-area.style.display="none";
-servicelist.style.display="none";
-serviceplan.style.display="none";
-servicereq.style.display="none";
-client.style.display="none";
-employee.style.display="none";
-
 }
 
 
 addclientstyle(){
-var client= document.getElementById('client');
-var employee = document.getElementById('employee');
-var servicereq = document.getElementById('servicereq');
-var serviceplan = document.getElementById('serviceplan');
-var servicelist = document.getElementById('servicelist');
-var addserviceplan = document.getElementById('addserviceplan');
-var areacode = document.getElementById('addareacode');
-var addemployee = document.getElementById('addemployees');
+this.onNone();
 var addclient = document.getElementById('addclient');
-var addclient = document.getElementById('addclient');
-var notify = document.getElementById('alerttag');
-var service = document.getElementById('addservice');
-service.style.display='none';
-    notify.style.display='none';
-addclient.style.display='none';
 addclient.style.display='block';
-addemployee.style.display='none'
-areacode.style.display='none';
-addserviceplan.style.display="none";
-var area = document.getElementById('area');
-area.style.display="none";
-servicelist.style.display="none";
-serviceplan.style.display="none";
-servicereq.style.display="none";
-client.style.display="none";
-employee.style.display="none";
-
 }
 
 addservicestyle(){
-var client= document.getElementById('client');
-var employee = document.getElementById('employee');
-var servicereq = document.getElementById('servicereq');
-var serviceplan = document.getElementById('serviceplan');
-var servicelist = document.getElementById('servicelist');
-var addserviceplan = document.getElementById('addserviceplan');
-var areacode = document.getElementById('addareacode');
-var addemployee = document.getElementById('addemployees');
-var addclient = document.getElementById('addclient');
-var addclient = document.getElementById('addclient');
-var notify = document.getElementById('alerttag');
+this.onNone();
 var service = document.getElementById('addservice');
-var service = document.getElementById('addservice');
-service.style.display='none';
 service.style.display='block';
-    notify.style.display='none';
-addclient.style.display='none';
-addclient.style.display='none';
-addemployee.style.display='none'
-areacode.style.display='none';
-addserviceplan.style.display="none";
-var area = document.getElementById('area');
-area.style.display="none";
-servicelist.style.display="none";
-serviceplan.style.display="none";
-servicereq.style.display="none";
-client.style.display="none";
-employee.style.display="none";
-
 }
 
 onEmployee(){
-var client= document.getElementById('client');
+this.onNone();
 var employee = document.getElementById('employee');
-var servicereq = document.getElementById('servicereq');
-var serviceplan = document.getElementById('serviceplan');
-var servicelist = document.getElementById('servicelist');
-var addserviceplan = document.getElementById('addserviceplan');
-var areacode = document.getElementById('addareacode');
-var addemployee = document.getElementById('addemployees');
-var addclient = document.getElementById('addclient');
-var notify = document.getElementById('alerttag');
-var service = document.getElementById('addservice');
-service.style.display='none';
-    notify.style.display='none';
-addclient.style.display='none';
-addemployee.style.display='none'
-areacode.style.display='none';
-addserviceplan.style.display="none";
-var area = document.getElementById('area');
-area.style.display="none";
-servicelist.style.display="none";
-serviceplan.style.display="none";
-servicereq.style.display="none";
-client.style.display="none";
 employee.style.display="block";
+this.loademployee();
 
 }
 
 onClient(){
 var client= document.getElementById('client');
-var employee = document.getElementById('employee');
-var servicereq = document.getElementById('servicereq');
-var serviceplan = document.getElementById('serviceplan');
-var servicelist = document.getElementById('servicelist');
-var addserviceplan = document.getElementById('addserviceplan');
-var addemployee = document.getElementById('addemployees');
-var addclient = document.getElementById('addclient');
-var notify = document.getElementById('alerttag');
-var service = document.getElementById('addservice');
-service.style.display='none';
-    notify.style.display='none';
-addclient.style.display='none';
-addemployee.style.display='none'
-addserviceplan.style.display="none";
-var area = document.getElementById('area');
-area.style.display="none";
-servicelist.style.display="none";
-serviceplan.style.display="none";
-servicereq.style.display="none";
-employee.style.display="none";
+this.onNone();
 client.style.display="block";
+this.loadclientsdetail();
 }
 
 onServicereq(){
-var client= document.getElementById('client');
-var employee = document.getElementById('employee');
 var servicereq = document.getElementById('servicereq');
-var serviceplan = document.getElementById('serviceplan');
-var servicelist = document.getElementById('servicelist');
-var addserviceplan = document.getElementById('addserviceplan');
-var areacode = document.getElementById('addareacode');
-var addemployee = document.getElementById('addemployees');
-var addclient = document.getElementById('addclient');
-var notify = document.getElementById('alerttag');
-var service = document.getElementById('addservice');
-service.style.display='none';
-    notify.style.display='none';
-addclient.style.display='none';
-addemployee.style.display='none'
-areacode.style.display='none';
-addserviceplan.style.display="none";
-var area = document.getElementById('area');
-area.style.display="none";
-servicelist.style.display="none";
-serviceplan.style.display="none";
+this.onNone();
 servicereq.style.display="block";
-client.style.display="none";
-employee.style.display="none";
+this.loadservicerequestdetail();
 }
 
 onServiceplan(){
-var client= document.getElementById('client');
-var employee = document.getElementById('employee');
-var servicereq = document.getElementById('servicereq');
-var serviceplan = document.getElementById('serviceplan');
-var servicelist = document.getElementById('servicelist');
-var addserviceplan = document.getElementById('addserviceplan');
-var areacode = document.getElementById('addareacode');
-var addemployee = document.getElementById('addemployees');
-var addclient = document.getElementById('addclient');
-var notify = document.getElementById('alerttag');
-var service = document.getElementById('addservice');
-service.style.display='none';
-    notify.style.display='none';
-addclient.style.display='none';
-addemployee.style.display='none'
-areacode.style.display='none';
-addserviceplan.style.display="none";
-var area = document.getElementById('area');
-area.style.display="none";
-servicelist.style.display="none";
-serviceplan.style.display="block";
-servicereq.style.display="none";
-client.style.display="none";
-employee.style.display="none";
 
+var serviceplan = document.getElementById('serviceplan');
+this.onNone();
+serviceplan.style.display="block";
 }
 
 
 servicePlanClick(){
-var client= document.getElementById('client');
-var employee = document.getElementById('employee');
-var servicereq = document.getElementById('servicereq');
-var serviceplan = document.getElementById('serviceplan');
+
 var servicelist = document.getElementById('servicelist');
-var addserviceplan = document.getElementById('addserviceplan');
-var areacode = document.getElementById('addareacode');
-var addemployee = document.getElementById('addemployees');
-var addclient = document.getElementById('addclient');
-var notify = document.getElementById('alerttag');
-var service = document.getElementById('addservice');
-service.style.display='none';
-    notify.style.display='none';
-addclient.style.display='none';
-addemployee.style.display='none'
-areacode.style.display='none';
-addserviceplan.style.display="none";
-var area = document.getElementById('area');
-area.style.display="none";
+this.onNone();
 servicelist.style.display="block";
-serviceplan.style.display="none";
-servicereq.style.display="none";
-client.style.display="none";
-employee.style.display="none";
-
-
-
-
 }
 
 addserviceplan(){
-var client= document.getElementById('client');
-var employee = document.getElementById('employee');
-var servicereq = document.getElementById('servicereq');
-var serviceplan = document.getElementById('serviceplan');
-var servicelist = document.getElementById('servicelist');
+
 var addserviceplan = document.getElementById('addserviceplan');
-var areacode = document.getElementById('addareacode');
-var addemployee = document.getElementById('addemployees');
-var addclient = document.getElementById('addclient');
-var notify = document.getElementById('alerttag');
-var service = document.getElementById('addservice');
-service.style.display='none';
-    notify.style.display='none';
-addclient.style.display='none';
-addemployee.style.display='none'
-areacode.style.display='none';
+this.onNone();
 addserviceplan.style.display="block";
-var area = document.getElementById('area');
-area.style.display="none";
-servicelist.style.display="none";
-serviceplan.style.display="none";
-servicereq.style.display="none";
-client.style.display="none";
-employee.style.display="none";
-
-
+setTimeout(function(){
+window.dispatchEvent(new Event("resize"));
+}, 1);
 }
 
 logout()
@@ -660,6 +569,115 @@ console.log(error);
 }
 
 
+loadclientcodedetail(){
+// load area code
+  console.log('loaddata client code detail');
+let url = API.API_GetClientcodedetail+this.code;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+      this.name = data.clientname;
+      this.phone = data.phone;
+      this.aphone = data.mobile;
+      this.address = data.address;
+      this.location = data.location;
+      this.areacode = data.areacode;
+       
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+
+}
+
+ 
+
+loadclientsdetail(){
+// load area code
+  console.log('loaddata clients detail');
+let url = API.API_GetClients;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+     this.areacodearray = Array();
+       this.areacodearray = data;
+       this.reInitDatatable();
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+
+}
+
+
+loadservicerequestdetail(){
+// load area code
+  console.log('loaddata service request detail');
+let url = API.API_GetServicerequest;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+     this.areacodearray = Array();
+       this.areacodearray = data;
+       this.reInitDatatable();
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+
+}
+
 loadareacode(){
 // load area code
   console.log('loaddata arae code');
@@ -684,7 +702,7 @@ let url = API.API_GetAreacode;
        console.log(JSON.stringify(data));
        this.areacodearray = Array();
        this.areacodearray = data;
-       
+       this.reInitDatatable();
 }, error => {
 if(error=="Unauthorized"){
 alert(error);
@@ -692,6 +710,645 @@ console.log(error);
 }
 });      
 
+}
+
+loademployee(){
+// load area code
+  console.log('loaddata employee');
+let url = API.API_GetEmployee;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+       this.areacodearray = Array();
+       this.areacodearray = data;
+       this.reInitDatatable();
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+
+}
+
+
+
+ onDateChanged2(event: IMyDateModel) {
+        // event properties are: event.date, event.jsdate, event.formatted and event.epoc
+       
+this.servicedate=event.date;
+}
+
+ onDateChanged(event: IMyDateModel) {
+        // event properties are: event.date, event.jsdate, event.formatted and event.epoc
+    this.bookingdate=event.formatted;
+}
+
+servicereqstForm(){
+   var dates =this.bookingdate.date.day+'/'+this.bookingdate.date.month+'/'+this.bookingdate.date.year;
+  var dates2 =this.servicedate.date.day+'/'+this.servicedate.date.month+'/'+this.servicedate.date.year;
+    if(this.code != '' ){
+       let url = API.API_AddServicerequest;
+       console.log(this.selectedvalue);
+             let body2 = "clientcode="+this.code+"&areacode="+this.areacode+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.mobile+'&location='+this.location+'&requesttype='+this.requesttype+'&bookingdate='+dates+'&servicedate='+dates2;
+             this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+    
+            this.http.post(url, body2, {headers : head2})
+            .map(res =>  res.json()).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        })
+       .subscribe(data => {
+      this.onServicereq();            
+        this.router.navigate(['/customer']);   
+     }, error => {
+       if(error=="Unauthorized"){
+       console.log(error);
+       alert(error);
+    
+  }
+  // var notify = document.getElementById('notifyss');
+  //    notify.style.display = 'block';
+  
+  $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+   
+     
+               console.log(error);
+             
+            });
+}
+}
+
+removearea(id){
+    console.log('deletedata');
+ console.log(id);
+let url = API.API_RemoveArea+id;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.delete(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+
+this.loadareacode();
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+}
+
+removeemployee(id){
+    console.log('deletedata');
+ console.log(id);
+let url = API.API_RemoveCustomer+id;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.delete(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+
+this.loademployee();
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+}
+
+removeclient(id){
+    console.log('deletedata');
+ console.log(id);
+let url = API.API_RemoveCustomer+id;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.delete(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+
+this.loadclientsdetail();
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+}
+
+
+removeservice(id){
+    console.log('deletedata');
+ console.log(id);
+let url = API.API_RemoveService+id;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.delete(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+
+this.loadservicerequestdetail();
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+}
+
+editarea(id){
+    console.log('reached edit');
+    sessionStorage.setItem('tempid',id);
+    this.onNone()
+    var editareacode = document.getElementById('editareacode')
+    editareacode.style.display = 'block'
+    this.loadsingleareadata(id)
+}
+
+editemployee(id){
+
+    console.log('reached edit');
+    sessionStorage.setItem('tempid',id);
+    this.onNone()
+    var editemployee = document.getElementById('editemployee')
+    editemployee.style.display = 'block'
+     this.loadsingleemployeedata(id)
+}
+
+editclient(id){
+    console.log('reached edit');
+    sessionStorage.setItem('tempid',id);
+   this.onNone()
+    var editclient   = document.getElementById('editclient')
+    editclient.style.display = 'block'
+    this.loadsingleclientdata(id)
+}
+
+editservice(id){
+    console.log('reached edit');
+    sessionStorage.setItem('tempid',id);
+    this.onNone()
+    var editservice = document.getElementById('editservice')
+    editservice.style.display = 'block'
+    this.loadsingleservicedata(id)
+}
+
+
+
+
+loadsingleareadata(id){
+       console.log('loadareadata');
+let url = API.API_GetAreacode+id;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+       this.code=data.areacode;
+       this.areaname=data.areaname;
+       this.location = data.location;
+       
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+    
+       }
+
+
+
+loadsingleemployeedata(id){
+       console.log('loaddata');
+let url = API.API_GetCustomer+id;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+       this.code=data.code;
+       this.name=data.username;
+       this.areacode=data.areacode;
+       this.address=data.address
+       this.phone=data.phone
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+    
+       }
+
+loadsingleclientdata(id){
+       console.log('loaddata');
+let url = API.API_GetCustomer+id;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+       this.code=data.clientcode;
+       this.name=data.clientname;
+       this.mobile=data.mobile;
+       this.extraroadpoints=data.extraroadpoints;
+       this.address=data.address
+       this.location=data.location;
+       this.phone=data.phone
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+    
+       }
+
+
+loadsingleservicedata(id){
+       console.log('loaddata');
+let url = API.API_GetServicerequest+id;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+       this.code=data.clientcode;
+       this.name=data.clientname;
+       this.aphone=data.mobile;
+       this.areacode=data.areacode;
+       this.address=data.address
+       this.phone=data.phone
+       this.location=data.location
+       this.requesttype=data.requesttype
+       var array = new Array();
+       var array2 = new Array();
+    //  split string and store it into array
+       array = this.servicedate.split('/');
+       array2 = this.bookingdate.split('/');
+
+       this.servicedate= { date: { year: array[2], month: array[1], day: array[0] } };
+this.bookingdate= { date: { year: array2[2], month: array2[1], day: array2[0] } };
+       this.servicedate=data.servicedate
+       this.bookingdate=data.bookingdate
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+    
+       }
+
+
+updateServiceForm(){
+ 
+      var dates =this.bookingdate.date.day+'/'+this.bookingdate.date.month+'/'+this.bookingdate.date.year;
+  var dates2 =this.servicedate.date.day+'/'+this.servicedate.date.month+'/'+this.servicedate.date.year;
+  var id = sessionStorage.getItem('tempid');
+    if(this.code != '' ){
+       let url = API.API_UpdateServicerequest+id;
+       console.log(this.selectedvalue);
+             let body2 = "clientcode="+this.code+"&areacode="+this.areacode+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.mobile+'&location='+this.location+'&requesttype='+this.requesttype+'&bookingdate='+dates+'&servicedate='+dates2;
+             this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+    
+            this.http.put(url, body2, {headers : head2})
+            .map(res =>  res.json()).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        })
+       .subscribe(data => {
+      this.onServicereq();            
+        this.router.navigate(['/customer']);   
+     }, error => {
+       if(error=="Unauthorized"){
+       console.log(error);
+       alert(error);
+    
+  }
+  // var notify = document.getElementById('notifyss');
+  //    notify.style.display = 'block';
+  
+  $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+   
+     
+               console.log(error);
+             
+            });
+}
+     }
+
+
+updateEmployeeForm(){
+ var id = sessionStorage.getItem('tempid');
+    if(this.code != '' && this.areacode !='' && this.password != '' && this.name !='' && this.phone !='' && this.address != ''){
+       let url = API.API_UpdateEmployee+id;
+             let body2 = "code="+this.code+"&areacode="+this.areacode+'&name='+this.name+'&password='+this.password+'&phone='+this.phone+'&address='+this.address;
+             this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+    
+            this.http.put(url, body2, {headers : head2})
+            .map(res =>  res.json()).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        })
+       .subscribe(data => {
+      this.onEmployee();            
+        this.router.navigate(['/customer']);   
+     }, error => {
+       if(error=="Unauthorized"){
+       console.log(error);
+       alert(error);
+    
+  }
+  // var notify = document.getElementById('notifyss');
+  //    notify.style.display = 'block';
+  
+  $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+   
+     
+               console.log(error);
+             
+            });
+}
+     }
+
+
+       updateClientForm(){
+ var id = sessionStorage.getItem('tempid');
+     if(this.code != '' && this.areacode !='' && this.name !='' && this.phone !='' && this.address != '' && this.mobile !=''){
+       let url = API.API_UpdateClient+id;
+       console.log(this.selectedvalue);
+             let body2 = "clientcode="+this.code+"&areacode="+this.selectedvalue+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.mobile+'&location='+this.location+'&extraroadpoints='+this.extraroadpoints;
+             this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+    
+            this.http.put(url, body2, {headers : head2})
+            .map(res =>  res.json()).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        })
+       .subscribe(data => {
+      this.onClient();            
+        this.router.navigate(['/customer']);   
+     }, error => {
+       if(error=="Unauthorized"){
+       console.log(error);
+       alert(error);
+    
+  }
+  // var notify = document.getElementById('notifyss');
+  //    notify.style.display = 'block';
+  
+  $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+   
+     
+               console.log(error);
+             
+            });
+}
+
+     }
+
+
+
+     updateAreaForm(){
+ var id = sessionStorage.getItem('tempid');
+       if(this.code != '' && this.areaname != '' && this.location !=''){
+       let url = API.API_UpdateAreacode+id;
+             let body2 = "code="+this.code+"&areaname="+this.areaname+'&location='+this.location;
+             this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+    
+            this.http.put(url, body2, {headers : head2})
+            .map(res =>  res.json()).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        })
+       .subscribe(data => {
+      this.onAreacode();            
+        this.router.navigate(['/customer']);   
+     }, error => {
+       if(error=="Unauthorized"){
+       console.log(error);
+       alert(error);
+    
+  }
+  // var notify = document.getElementById('notifyss');
+  //    notify.style.display = 'block';
+  
+  $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+   
+     
+               console.log(error);
+             
+            });
+      }
+     }
+
+changepassword(){
+
+  
+    this.onNone()
+    var changepassword = document.getElementById('changepassword')
+    changepassword.style.display='block'
+
+}
+
+passwordForm(){
+
+var names = sessionStorage.getItem('currentUser')
+if(this.cnewpassword == this.newpassword){
+
+       let urlaccess = API.API_UpdatePassword;
+             let body2 ="name="+names+"&password="+this.newpassword+'&oldpassword='+this.currentpassword;
+             this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+    
+            this.http.put(urlaccess, body2, {headers : head2})
+            .map(res =>  res.json()).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        })
+       .subscribe(data => {
+       console.log(data);
+       this.onAreacode();            
+        this.router.navigate(['/customer']);   
+     console.log("reached here")    
+ }, error => {
+       if(error=="Unauthorized"){
+       console.log(error);
+       alert(error);
+    
+  }
+  // var notify = document.getElementById('notifys');
+    //  notify.style.display = 'block';
+  
+  $("#notifyss").show();
+  setTimeout(function() { $("#notifyss").hide(); }, 5000);
+   
+     
+               console.log(error);
+             
+            });
+}
 }
 
 }

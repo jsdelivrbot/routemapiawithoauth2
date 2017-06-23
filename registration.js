@@ -20,7 +20,7 @@ exports.registerUser = function(req, res) {
                 res.send("Username is already taken", 422)
             } else {
                 bcrypt.hash(password, 11, function (err, hash) {
-                    db.collection('users').save({username: username, password: hash}, function (err) {
+                    db.collection('users').save({username: username, password: hash,usertype :0}, function (err) {
                         res.send({username: username}, 200)
                     })
                 })

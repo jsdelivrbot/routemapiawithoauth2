@@ -20,6 +20,13 @@ import 'datatables.net';
   moduleId: module.id,
   selector: 'admin',
   templateUrl: './admin.component.html',
+  styles: [
+   "styles.css",
+   "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+   "../node_modules/bootstrap/dist/css/bootstrap-theme.min.css",
+   "../node_modules/datatables.net-bs/css/dataTables.bootstrap.css",
+   "../node_modules/datatables.net-select-bs/css/select.bootstrap.css"
+ ]
 })
 
 export class AdminComponent implements OnInit{ 
@@ -44,19 +51,46 @@ export class AdminComponent implements OnInit{
     public currentpassword:any;
     public newpassword:any;
     public cnewpassword:any;
+    public tableWidget:any;
+    public selectedName:any;
 
 
 // on init
     ngOnInit(){
+
 this.loaddata();
+
     }
 
+ngAfterViewInit() {
+    this.initDatatable()
+  }
+
+    private initDatatable(): void {
+   
+    let exampleId: any = $('#example');
+    this.tableWidget = exampleId.DataTable({
+      destroy: true,
+      select: true
+    });
+ 
+  }
+
+
+  private reInitDatatable(): void {
+    if (this.tableWidget) {
+      this.tableWidget.destroy()
+      this.tableWidget=null
+    }
+    setTimeout(() => this.initDatatable(),0)
+  }
+
+  public selectRow(index: number, row:any) {
+    this.selectedName = "row#" + index + " " + row.name
+  }
     
     constructor(private router: Router,public http:Http){
-    $(document).ready( function () {
-    $('#example').DataTable();
-} );
-
+   
 
 this.loaddata();
     }
@@ -192,6 +226,7 @@ let url = API.API_GetCustomer;
        console.log(JSON.stringify(data));
 this.display = Array();
 this.display=data;
+this.reInitDatatable()
 }, error => {
 if(error=="Unauthorized"){
 alert(error);
@@ -315,7 +350,7 @@ updateForm(){
             // do any other checking for statuses here
         })
        .subscribe(data => {
-      this.home();            
+        this.home();            
         this.router.navigate(['/admin']);   
      }, error => {
        if(error=="Unauthorized"){
@@ -323,20 +358,10 @@ updateForm(){
        alert(error);
     
   }
-  // var notify = document.getElementById('notifys');
-    //  notify.style.display = 'block';
-  
-  $("#notifyss").show();
-  setTimeout(function() { $("#notifyss").hide(); }, 5000);
-   
-     
-               console.log(error);
+  console.log(error + "suggested");
              
             });
  
-       }else{
-$("#notifyss").show();
-  setTimeout(function() { $("#notifyss").hide(); }, 5000);
        }
      }
 
@@ -348,10 +373,11 @@ $("#notifyss").show();
 
 passwordForm(){
 
+var names = sessionStorage.getItem('adminUser')
 if(this.cnewpassword == this.newpassword){
 
        let urlaccess = API.API_UpdatePassword;
-             let body2 ="name="+this.name+"&password="+this.newpassword+'&oldpassword='+this.currentpassword;
+             let body2 ="name="+names+"&password="+this.newpassword+'&oldpassword='+this.currentpassword;
              this.accesstoken=sessionStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
@@ -366,7 +392,8 @@ if(this.cnewpassword == this.newpassword){
             // do any other checking for statuses here
         })
        .subscribe(data => {
-      this.home();            
+       console.log(data);
+       this.home();            
         this.router.navigate(['/admin']);   
      }, error => {
        if(error=="Unauthorized"){

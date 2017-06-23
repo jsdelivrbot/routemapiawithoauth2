@@ -36,7 +36,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr class="active" *ngFor="let data of display">
+                  <tr class="active" *ngFor="let data of display;let i = index">
                     <td>{{data.code}}</td>
                     <td>{{data.username}}</td>
                     <td>{{data.api}}</td>

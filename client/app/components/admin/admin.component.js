@@ -22,14 +22,32 @@ var AdminComponent = (function () {
     function AdminComponent(router, http) {
         this.router = router;
         this.http = http;
-        $(document).ready(function () {
-            $('#example').DataTable();
-        });
         this.loaddata();
     }
     // on init
     AdminComponent.prototype.ngOnInit = function () {
         this.loaddata();
+    };
+    AdminComponent.prototype.ngAfterViewInit = function () {
+        this.initDatatable();
+    };
+    AdminComponent.prototype.initDatatable = function () {
+        var exampleId = $('#example');
+        this.tableWidget = exampleId.DataTable({
+            destroy: true,
+            select: true
+        });
+    };
+    AdminComponent.prototype.reInitDatatable = function () {
+        var _this = this;
+        if (this.tableWidget) {
+            this.tableWidget.destroy();
+            this.tableWidget = null;
+        }
+        setTimeout(function () { return _this.initDatatable(); }, 0);
+    };
+    AdminComponent.prototype.selectRow = function (index, row) {
+        this.selectedName = "row#" + index + " " + row.name;
     };
     // home page
     AdminComponent.prototype.home = function () {
@@ -136,6 +154,7 @@ var AdminComponent = (function () {
             console.log(JSON.stringify(data));
             _this.display = Array();
             _this.display = data;
+            _this.reInitDatatable();
         }, function (error) {
             if (error == "Unauthorized") {
                 alert(error);
@@ -247,23 +266,16 @@ var AdminComponent = (function () {
                     console.log(error);
                     alert(error);
                 }
-                // var notify = document.getElementById('notifys');
-                //  notify.style.display = 'block';
-                $("#notifyss").show();
-                setTimeout(function () { $("#notifyss").hide(); }, 5000);
-                console.log(error);
+                console.log(error + "suggested");
             });
-        }
-        else {
-            $("#notifyss").show();
-            setTimeout(function () { $("#notifyss").hide(); }, 5000);
         }
     };
     AdminComponent.prototype.passwordForm = function () {
         var _this = this;
+        var names = sessionStorage.getItem('adminUser');
         if (this.cnewpassword == this.newpassword) {
             var urlaccess = api_config_1.API.API_UpdatePassword;
-            var body2 = "name=" + this.name + "&password=" + this.newpassword + '&oldpassword=' + this.currentpassword;
+            var body2 = "name=" + names + "&password=" + this.newpassword + '&oldpassword=' + this.currentpassword;
             this.accesstoken = sessionStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -277,6 +289,7 @@ var AdminComponent = (function () {
                 // do any other checking for statuses here
             })
                 .subscribe(function (data) {
+                console.log(data);
                 _this.home();
                 _this.router.navigate(['/admin']);
             }, function (error) {
@@ -311,6 +324,13 @@ AdminComponent = __decorate([
         moduleId: module.id,
         selector: 'admin',
         templateUrl: './admin.component.html',
+        styles: [
+            "styles.css",
+            "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+            "../node_modules/bootstrap/dist/css/bootstrap-theme.min.css",
+            "../node_modules/datatables.net-bs/css/dataTables.bootstrap.css",
+            "../node_modules/datatables.net-select-bs/css/select.bootstrap.css"
+        ]
     }),
     __metadata("design:paramtypes", [router_1.Router, http_1.Http])
 ], AdminComponent);

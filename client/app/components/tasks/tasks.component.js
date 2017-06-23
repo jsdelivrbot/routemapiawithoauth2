@@ -63,7 +63,7 @@ var TasksComponent = (function () {
                 console.log('access_token' + _this.access_token + '\n refresh_token' + _this.refresh_token);
                 sessionStorage.setItem('access_token', _this.access_token);
                 localStorage.setItem('refresh_token', _this.refresh_token);
-                sessionStorage.setItem('adminUser', 'admin');
+                sessionStorage.setItem('adminUser', _this.name);
                 _this.router.navigate(['/admin']);
             }, function (error) {
                 console.log(error);
@@ -91,7 +91,7 @@ var TasksComponent = (function () {
                 console.log('access_token' + _this.access_token + '\n refresh_token' + _this.refresh_token);
                 sessionStorage.setItem('access_token', _this.access_token);
                 localStorage.setItem('refresh_token', _this.refresh_token);
-                sessionStorage.setItem('currentUser', 'customer');
+                sessionStorage.setItem('currentUser', _this.name);
                 _this.router.navigate(['/customer']);
             }, function (error) {
                 console.log(error);
