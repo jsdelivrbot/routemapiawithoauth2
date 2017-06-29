@@ -93,8 +93,8 @@ if(sessionStorage.getItem('adminUser')=='admin'){
         this.router.navigate(['/admin']);   
      }, error => {
                console.log(error);
-             var notify = document.getElementById('alerttag');
-    notify.style.display='block';   
+            $("#alerttag").show();
+  setTimeout(function() { $("#alerttag").hide(); }, 5000);
             });
          
 }
@@ -125,8 +125,8 @@ if(sessionStorage.getItem('adminUser')=='admin'){
      this.router.navigate(['/customer']);  
      }, error => {
                console.log(error);
-             var notify = document.getElementById('alerttag');
-    notify.style.display='block';   
+            $("#alertag").show();
+  setTimeout(function() { $("#alerttag").hide(); }, 5000);
             });
         
      

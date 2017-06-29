@@ -11,6 +11,8 @@ import {API} from './../../api_config/api_config';
 import {Base64} from 'js-base64';
 import "jquery";
 import 'datatables.net';
+import {AgmCoreModule} from 'angular2-google-maps/core';
+
 
 @Component({
   moduleId: module.id,
@@ -43,6 +45,9 @@ public yyyy:any;
   lat: number = 51.673858;
   lng: number = 7.815982;
 
+  lat1: number = 51.673858;
+  lng1: number = 7.815982;
+
 
 
 // declaration
@@ -72,8 +77,10 @@ public clientdetails:any;
     public newpassword:any;
     public cnewpassword:any;
     public locationname:any;
-
-
+    public selective:any;
+    public lastlocation:any;
+    public planareacode:any
+    public planemployee:any
 
     reinitializeall(){
         this.name="";
@@ -91,19 +98,11 @@ this.extraroadpoints="";
  this.currentpassword=""
  this.newpassword=""
  this.cnewpassword=""
+this.planareacode=""
+this.planemployee=""
     }
 
-clickedMarker(label: string, index: number) {
-    console.log(`clicked the marker: ${label || index}`)
-    
-    this.locationname = label;  
-}
-  
-  
-  
-markerDragEnd(m: marker, $event: MouseEvent) {
-    console.log('dragEnd', m, $event);
-  }
+    public markers2:any;
   
   markers: marker[] = [
 	  {
@@ -126,6 +125,119 @@ markerDragEnd(m: marker, $event: MouseEvent) {
 	  }
   ]
 
+clickedMarker(label: string, index: number) {
+    console.log(`clicked the marker: ${label || index}`)
+    
+    this.locationname = label;  
+}
+  
+
+plansearch(){
+   console.log('plan search')
+
+//    if employee name
+   if(this.planareacode == ''){
+   let url = API.API_GetEmployeePlan+this.planemployee;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+       
+       this.planareacode = data.areacode;
+       
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+
+   }
+    var dates2 =this.servicedate.date.day+'/'+this.servicedate.date.month+'/'+this.servicedate.date.year;
+       let url = API.API_GetServiceRequestPlan+this.planareacode+'/'+dates2;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+       this.markers = new Array()
+//        for(var i=0;i<data.length;i++){
+//        var temp_array = data[i].location.split(',');
+//     //    this.markers.push({
+//     //   lat: temp_array[0],
+//     //   lng: temp_array[1]
+//     // });    
+//    }
+    
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+   
+
+
+}
+  
+markerDragEnd(m: marker, $event: MouseEvent) {
+    console.log('dragEnd', m, $event);
+  }
+
+  
+
+mapClicked($event: MouseEvent) {
+    this.markers2 = new Array()
+    this.markers2.push({
+      lat: $event.coords.lat,
+      lng: $event.coords.lng
+    });
+    console.log(this.markers2[this.markers2.length-1].lat,this.markers2[this.markers2.length-1].lng)
+  this.location = this.markers2[this.markers2.length-1].lat+','+this.markers2[this.markers2.length-1].lng
+   if(this.lastlocation == 1){
+    this.addareacode()
+   }else if(this.lastlocation == 3){
+    this.addclient()
+   }else if(this.lastlocation == 4){
+     this.addservice()
+   }else if(this.lastlocation == 5){
+     this.editarea(sessionStorage.getItem('tempid'))
+   }else if(this.lastlocation == 6){
+     this.editclient(sessionStorage.getItem('tempid'))
+   }else if(this.lastlocation == 7){
+     this.editservice(sessionStorage.getItem('tempid'))
+   }
+
+}
+
+  
 
 
 
@@ -145,8 +257,9 @@ constructor(private router: Router,public http:Http){
 ngOnInit(){
      //called after the constructor and called  after the first ngOnChanges() 
 this.date();      
-var notify = document.getElementById('alerttag');
-    notify.style.display='block';
+
+    $("#alerttag").show();
+  setTimeout(function() { $("#alerttag").hide(); }, 5000);
 this.loadareacode(); 
   }
 
@@ -246,6 +359,7 @@ var client= document.getElementById('client');
 var employee = document.getElementById('employee');
 var servicereq = document.getElementById('servicereq');
 var serviceplan = document.getElementById('serviceplan');
+var locationpicker = document.getElementById('locationpicker')
 var servicelist = document.getElementById('servicelist');
 var addserviceplan = document.getElementById('addserviceplan');
 var areacode = document.getElementById('addareacode');
@@ -265,6 +379,10 @@ mapform.style.display= "none"
   var changepassword = document.getElementById('changepassword')
     changepassword.style.display='none'
 
+locationpicker.style.display = 'none'
+
+
+// serviceaddlist.style.display = 'none'
 editareacode.style.display = 'none'
 editemployee.style.display = 'none'
 editclient.style.display = 'none'
@@ -283,11 +401,16 @@ serviceplan.style.display="none";
 servicereq.style.display="none";
 client.style.display="none";
 employee.style.display="none";
+
+if(this.selective == 1)
 this.reinitializeall();
+
 }
 
 onAreacode(){
+this.selective=1
 this.onNone();
+
 var area = document.getElementById('area');
 area.style.display="block";
 this.loadareacode();
@@ -295,32 +418,48 @@ this.loadareacode();
 
 
 addAreacodestyle(){
+
 this.onNone();
+
 var areacode = document.getElementById('addareacode');
 areacode.style.display='block';
 }
 
 
 addemployestyle(){
+   
 this.onNone();
 var addemployee = document.getElementById('addemployees');
 addemployee.style.display='block'
 }
 
 
+addLocation(name){
+    this.selective=2
+    this.onNone()
+    
+    this.lastlocation=name
+    var locationpicker = document.getElementById('locationpicker')
+    locationpicker.style.display = 'block'
+window.dispatchEvent(new Event("resize"));
+}
+
 addclientstyle(){
+    this.selective=2
 this.onNone();
 var addclient = document.getElementById('addclient');
 addclient.style.display='block';
 }
 
 addservicestyle(){
+    this.selective=2
 this.onNone();
 var service = document.getElementById('addservice');
 service.style.display='block';
 }
 
 onEmployee(){
+    this.selective=1
 this.onNone();
 var employee = document.getElementById('employee');
 employee.style.display="block";
@@ -329,6 +468,7 @@ this.loademployee();
 }
 
 onClient(){
+    this.selective=1
 var client= document.getElementById('client');
 this.onNone();
 client.style.display="block";
@@ -336,6 +476,7 @@ this.loadclientsdetail();
 }
 
 onServicereq(){
+    this.selective=1
 var servicereq = document.getElementById('servicereq');
 this.onNone();
 servicereq.style.display="block";
@@ -343,7 +484,7 @@ this.loadservicerequestdetail();
 }
 
 onServiceplan(){
-
+this.selective=1
 var serviceplan = document.getElementById('serviceplan');
 this.onNone();
 serviceplan.style.display="block";
@@ -351,14 +492,14 @@ serviceplan.style.display="block";
 
 
 servicePlanClick(){
-
+this.selective=2
 var servicelist = document.getElementById('servicelist');
 this.onNone();
 servicelist.style.display="block";
 }
 
 addserviceplan(){
-
+this.selective=2
 var addserviceplan = document.getElementById('addserviceplan');
 this.onNone();
 addserviceplan.style.display="block";
@@ -367,6 +508,12 @@ window.dispatchEvent(new Event("resize"));
 }, 1);
 var mapform = document.getElementById('mapform')
 mapform.style.display= "block"
+
+
+// var serviceaddlist = document.getElementById('serviceaddlist')
+// serviceaddlist.style.display = 'block'
+
+
 }
 
 logout()
@@ -405,6 +552,10 @@ areaForm(){
             if (e.status === 401) {
                 return Observable.throw('Unauthorized');
             }
+
+            if(e.status === 422){
+                return Observable.throw('duplicate')
+            }
             // do any other checking for statuses here
         })
        .subscribe(data => {
@@ -416,16 +567,24 @@ areaForm(){
        alert(error);
     
   }
-  // var notify = document.getElementById('notifyss');
-  //    notify.style.display = 'block';
-  
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+
+if(error == 'duplicate'){
+     $("#notifyss1").show();
+        setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+   
+     
+               console.log(error+'reached duplicate');
+}
+     $("#notifyss1").show();
+        setTimeout(function() { $("#notifyss1").hide(); }, 5000);
    
      
                console.log(error);
              
             });
+      }else{
+          $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
       }
 }
 
@@ -452,6 +611,9 @@ if(this.code != '' && this.areacode !='' && this.password != '' && this.name !='
             if (e.status === 401) {
                 return Observable.throw('Unauthorized');
             }
+            if(e.status === 422){
+                return Observable.throw('duplicate');
+            }
             // do any other checking for statuses here
         })
        .subscribe(data => {
@@ -463,6 +625,11 @@ if(this.code != '' && this.areacode !='' && this.password != '' && this.name !='
        alert(error);
     
   }
+
+  if(error == 'duplicate'){
+  $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);    
+  }
   // var notify = document.getElementById('notifyss');
   //    notify.style.display = 'block';
   
@@ -473,6 +640,9 @@ if(this.code != '' && this.areacode !='' && this.password != '' && this.name !='
                console.log(error);
              
             });
+}else{
+    $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
 }
 
 }
@@ -507,6 +677,10 @@ if(this.code != '' && this.areacode !='' && this.name !='' && this.phone !='' &&
             if (e.status === 401) {
                 return Observable.throw('Unauthorized');
             }
+
+            if (e.status === 422) {
+                return Observable.throw('duplicate');
+            }
             // do any other checking for statuses here
         })
        .subscribe(data => {
@@ -518,6 +692,11 @@ if(this.code != '' && this.areacode !='' && this.name !='' && this.phone !='' &&
        alert(error);
     
   }
+
+  if(error == 'duplicate'){
+  $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);    
+  }
   // var notify = document.getElementById('notifyss');
   //    notify.style.display = 'block';
   
@@ -528,6 +707,9 @@ if(this.code != '' && this.areacode !='' && this.name !='' && this.phone !='' &&
                console.log(error);
              
             });
+}else{
+    $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
 }
 
 
@@ -782,6 +964,11 @@ servicereqstForm(){
             if (e.status === 401) {
                 return Observable.throw('Unauthorized');
             }
+
+            if (e.status === 422) {
+                return Observable.throw('duplicate');
+            }
+
             // do any other checking for statuses here
         })
        .subscribe(data => {
@@ -793,6 +980,13 @@ servicereqstForm(){
        alert(error);
     
   }
+
+  if(error == 'duplicate'){
+  $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);    
+}
+
+
   // var notify = document.getElementById('notifyss');
   //    notify.style.display = 'block';
   
@@ -803,6 +997,9 @@ servicereqstForm(){
                console.log(error);
              
             });
+}else{
+    $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
 }
 }
 
@@ -936,6 +1133,7 @@ console.log(error);
 }
 
 editarea(id){
+this.selective=2    
     console.log('reached edit');
     sessionStorage.setItem('tempid',id);
     this.onNone()
@@ -945,7 +1143,7 @@ editarea(id){
 }
 
 editemployee(id){
-
+this.selective=2
     console.log('reached edit');
     sessionStorage.setItem('tempid',id);
     this.onNone()
@@ -955,6 +1153,7 @@ editemployee(id){
 }
 
 editclient(id){
+    this.selective=2
     console.log('reached edit');
     sessionStorage.setItem('tempid',id);
    this.onNone()
@@ -964,6 +1163,7 @@ editclient(id){
 }
 
 editservice(id){
+    this.selective=2
     console.log('reached edit');
     sessionStorage.setItem('tempid',id);
     this.onNone()
@@ -1191,9 +1391,14 @@ updateEmployeeForm(){
     
             this.http.put(url, body2, {headers : head2})
             .map(res =>  res.json()).catch(e => {
-            if (e.status === 401) {
+            if (e.status === 401) { 
                 return Observable.throw('Unauthorized');
             }
+
+if (e.status === 422) {
+                return Observable.throw('duplicate');
+            }
+
             // do any other checking for statuses here
         })
        .subscribe(data => {
@@ -1205,6 +1410,11 @@ updateEmployeeForm(){
        alert(error);
     
   }
+
+  if(error == 'duplicate'){
+  $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);    
+  }
   // var notify = document.getElementById('notifyss');
   //    notify.style.display = 'block';
   
@@ -1215,6 +1425,9 @@ updateEmployeeForm(){
                console.log(error);
              
             });
+}else{
+    $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
 }
      }
 
@@ -1236,6 +1449,10 @@ updateEmployeeForm(){
             if (e.status === 401) {
                 return Observable.throw('Unauthorized');
             }
+
+            if (e.status === 422) {
+                return Observable.throw('duplicate');
+            }
             // do any other checking for statuses here
         })
        .subscribe(data => {
@@ -1249,6 +1466,10 @@ updateEmployeeForm(){
   }
   // var notify = document.getElementById('notifyss');
   //    notify.style.display = 'block';
+  if(error == 'duplicate'){
+  $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);     
+  }
   
   $("#notifyss1").show();
   setTimeout(function() { $("#notifyss1").hide(); }, 5000);
@@ -1257,6 +1478,9 @@ updateEmployeeForm(){
                console.log(error);
              
             });
+}else{
+    $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
 }
 
      }
@@ -1280,32 +1504,46 @@ updateEmployeeForm(){
                 return Observable.throw('Unauthorized');
             }
             // do any other checking for statuses here
-        })
+            if (e.status === 422){
+                return Observable.throw('duplicate');
+            }
+                
+})
        .subscribe(data => {
       this.onAreacode();            
         this.router.navigate(['/customer']);   
      }, error => {
        if(error=="Unauthorized"){
-       console.log(error);
+       console.log(error + "dislaying error");
        alert(error);
     
   }
-  // var notify = document.getElementById('notifyss');
-  //    notify.style.display = 'block';
-  
+  if(error=='duplicate'){
+   console.log(error);
   $("#notifyss1").show();
   setTimeout(function() { $("#notifyss1").hide(); }, 5000);
-   
+   window.alert("alreaady added data");    
+  }
+  // var notify = document.getElementById('notifyss');
+  //    notify.style.display = 'block';
+   console.log(error);
+  $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+   window.alert("alreaady added data");
      
-               console.log(error);
+              
              
             });
-      }
+      }else{
+          $("#notifyss1").show();
+  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+    window.alert("please fill all the fields")  
+    }
      }
 
 changepassword(){
 
-  
+  this.selective=1
     this.onNone()
     var changepassword = document.getElementById('changepassword')
     changepassword.style.display='block'
@@ -1353,6 +1591,9 @@ if(this.cnewpassword == this.newpassword){
                console.log(error);
              
             });
+}else{
+    $("#notifyss").show();
+  setTimeout(function() { $("#notifyss").hide(); }, 5000);
 }
 }
 

@@ -67,8 +67,8 @@ var TasksComponent = (function () {
                 _this.router.navigate(['/admin']);
             }, function (error) {
                 console.log(error);
-                var notify = document.getElementById('alerttag');
-                notify.style.display = 'block';
+                $("#alerttag").show();
+                setTimeout(function () { $("#alerttag").hide(); }, 5000);
             });
         }
         else {
@@ -95,8 +95,8 @@ var TasksComponent = (function () {
                 _this.router.navigate(['/customer']);
             }, function (error) {
                 console.log(error);
-                var notify = document.getElementById('alerttag');
-                notify.style.display = 'block';
+                $("#alertag").show();
+                setTimeout(function () { $("#alerttag").hide(); }, 5000);
             });
         }
     };

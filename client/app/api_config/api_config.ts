@@ -32,6 +32,10 @@ public static API_GetEmployee = API.API_ENDPOINT + '/api/getemployee/';
 
 public static API_GetAreacode = API.API_ENDPOINT + '/api/getareacode/';
 
+public static API_GetEmployeePlan = API.API_ENDPOINT + '/api/getemployeeplan/';
+
+public static API_GetServiceRequestPlan = API.API_ENDPOINT + '/api/getservicerequestplan/';
+
 public static API_GetClients = API.API_ENDPOINT + '/api/getclients/';
 
 public static API_GetServicerequest = API.API_ENDPOINT + '/api/getservicerequest/';

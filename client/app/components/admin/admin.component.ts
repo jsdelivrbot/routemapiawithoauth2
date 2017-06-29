@@ -57,7 +57,8 @@ export class AdminComponent implements OnInit{
 
 // on init
     ngOnInit(){
-
+    $("#alerttag").show();
+  setTimeout(function() { $("#alerttag").hide(); }, 5000);
 this.loaddata();
 
     }
@@ -109,6 +110,13 @@ var displass = document.getElementById('editcustomer')
     displass.style.display = 'none';
     var changepassword = document.getElementById('changepassword')
     changepassword.style.display='none'
+      this.code='';
+       this.name="";
+       this.password="";
+       this.email="";
+       this.api="";
+       this.address="";
+       this.phone="";
 this.loaddata();
 }
 
@@ -157,7 +165,13 @@ dismiss(){
 
 
 submitForm(){
- 
+ if(  !(this.code=='') &&
+       !(this.name=="") &&
+       !(this.password=="")&&
+       !(this.email=="")&&
+       !(this.api=="")&&
+       !(this.address=="")&&
+       !(this.phone=="")){
       if(this.password == this.cpassword){
 
   // get access token
@@ -200,6 +214,10 @@ submitForm(){
 $("#notifys").show();
   setTimeout(function() { $("#notifys").hide(); }, 5000);
        }
+ }else{
+                $("#notifys").show();
+  setTimeout(function() { $("#notifys").hide(); }, 5000);
+ }
      }
 
      
@@ -329,7 +347,13 @@ edit(id){
 
 
 updateForm(){
- 
+ if(  !(this.code=='') &&
+       !(this.name=="") &&
+       !(this.password=="")&&
+       !(this.email=="")&&
+       !(this.api=="")&&
+       !(this.address=="")&&
+       !(this.phone=="")){
       if(this.password == this.cpassword){
 
   // get access token
@@ -359,9 +383,17 @@ updateForm(){
     
   }
   console.log(error + "suggested");
-             
+             $("#notifyss").show();
+  setTimeout(function() { $("#notifyss").hide(); }, 5000);
             });
  
+       }else{
+             $("#notifyss").show();
+  setTimeout(function() { $("#notifyss").hide(); }, 5000);
+       }
+       }else{
+                      $("#notifyss").show();
+  setTimeout(function() { $("#notifyss").hide(); }, 5000);
        }
      }
 
@@ -401,8 +433,6 @@ if(this.cnewpassword == this.newpassword){
        alert(error);
     
   }
-  // var notify = document.getElementById('notifys');
-    //  notify.style.display = 'block';
   
   $("#notifyss").show();
   setTimeout(function() { $("#notifyss").hide(); }, 5000);
@@ -411,6 +441,9 @@ if(this.cnewpassword == this.newpassword){
                console.log(error);
              
             });
+}else{
+    $("#notifyss").show();
+  setTimeout(function() { $("#notifyss").hide(); }, 5000);
 }
 }
 

@@ -26,6 +26,8 @@ var AdminComponent = (function () {
     }
     // on init
     AdminComponent.prototype.ngOnInit = function () {
+        $("#alerttag").show();
+        setTimeout(function () { $("#alerttag").hide(); }, 5000);
         this.loaddata();
     };
     AdminComponent.prototype.ngAfterViewInit = function () {
@@ -61,6 +63,13 @@ var AdminComponent = (function () {
         displass.style.display = 'none';
         var changepassword = document.getElementById('changepassword');
         changepassword.style.display = 'none';
+        this.code = '';
+        this.name = "";
+        this.password = "";
+        this.email = "";
+        this.api = "";
+        this.address = "";
+        this.phone = "";
         this.loaddata();
     };
     // add customer plus button functionality
@@ -95,36 +104,48 @@ var AdminComponent = (function () {
     };
     AdminComponent.prototype.submitForm = function () {
         var _this = this;
-        if (this.password == this.cpassword) {
-            // get access token
-            var urlaccess = api_config_1.API.API_AddCustomer;
-            var body2 = "name=" + this.name + "&password=" + this.password + '&email=' + this.email + '&code=' + this.code + '&location=' + this.location + '&api=' + this.api + '&address=' + this.address + '&phone=' + this.phone;
-            this.accesstoken = sessionStorage.getItem('access_token');
-            var head2 = new http_1.Headers({
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Bearer ' + this.accesstoken
-            });
-            this.http.post(urlaccess, body2, { headers: head2 })
-                .map(function (res) { return res.json(); }).catch(function (e) {
-                if (e.status === 401) {
-                    return Observable_1.Observable.throw('Unauthorized');
-                }
-                // do any other checking for statuses here
-            })
-                .subscribe(function (data) {
-                _this.home();
-                _this.router.navigate(['/admin']);
-            }, function (error) {
-                if (error == "Unauthorized") {
+        if (!(this.code == '') &&
+            !(this.name == "") &&
+            !(this.password == "") &&
+            !(this.email == "") &&
+            !(this.api == "") &&
+            !(this.address == "") &&
+            !(this.phone == "")) {
+            if (this.password == this.cpassword) {
+                // get access token
+                var urlaccess = api_config_1.API.API_AddCustomer;
+                var body2 = "name=" + this.name + "&password=" + this.password + '&email=' + this.email + '&code=' + this.code + '&location=' + this.location + '&api=' + this.api + '&address=' + this.address + '&phone=' + this.phone;
+                this.accesstoken = sessionStorage.getItem('access_token');
+                var head2 = new http_1.Headers({
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Bearer ' + this.accesstoken
+                });
+                this.http.post(urlaccess, body2, { headers: head2 })
+                    .map(function (res) { return res.json(); }).catch(function (e) {
+                    if (e.status === 401) {
+                        return Observable_1.Observable.throw('Unauthorized');
+                    }
+                    // do any other checking for statuses here
+                })
+                    .subscribe(function (data) {
+                    _this.home();
+                    _this.router.navigate(['/admin']);
+                }, function (error) {
+                    if (error == "Unauthorized") {
+                        console.log(error);
+                        alert(error);
+                    }
+                    // var notify = document.getElementById('notifys');
+                    //  notify.style.display = 'block';
+                    $("#notifys").show();
+                    setTimeout(function () { $("#notifys").hide(); }, 5000);
                     console.log(error);
-                    alert(error);
-                }
-                // var notify = document.getElementById('notifys');
-                //  notify.style.display = 'block';
+                });
+            }
+            else {
                 $("#notifys").show();
                 setTimeout(function () { $("#notifys").hide(); }, 5000);
-                console.log(error);
-            });
+            }
         }
         else {
             $("#notifys").show();
@@ -241,33 +262,51 @@ var AdminComponent = (function () {
     };
     AdminComponent.prototype.updateForm = function () {
         var _this = this;
-        if (this.password == this.cpassword) {
-            // get access token
-            var id = sessionStorage.getItem('tempid');
-            var urlaccess = api_config_1.API.API_UpdateCustomer + id;
-            var body2 = "name=" + this.name + "&password=" + this.password + '&email=' + this.email + '&code=' + this.code + '&location=' + this.location + '&api=' + this.api + '&address=' + this.address + '&phone=' + this.phone;
-            this.accesstoken = sessionStorage.getItem('access_token');
-            var head2 = new http_1.Headers({
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Bearer ' + this.accesstoken
-            });
-            this.http.put(urlaccess, body2, { headers: head2 })
-                .map(function (res) { return res.json(); }).catch(function (e) {
-                if (e.status === 401) {
-                    return Observable_1.Observable.throw('Unauthorized');
-                }
-                // do any other checking for statuses here
-            })
-                .subscribe(function (data) {
-                _this.home();
-                _this.router.navigate(['/admin']);
-            }, function (error) {
-                if (error == "Unauthorized") {
-                    console.log(error);
-                    alert(error);
-                }
-                console.log(error + "suggested");
-            });
+        if (!(this.code == '') &&
+            !(this.name == "") &&
+            !(this.password == "") &&
+            !(this.email == "") &&
+            !(this.api == "") &&
+            !(this.address == "") &&
+            !(this.phone == "")) {
+            if (this.password == this.cpassword) {
+                // get access token
+                var id = sessionStorage.getItem('tempid');
+                var urlaccess = api_config_1.API.API_UpdateCustomer + id;
+                var body2 = "name=" + this.name + "&password=" + this.password + '&email=' + this.email + '&code=' + this.code + '&location=' + this.location + '&api=' + this.api + '&address=' + this.address + '&phone=' + this.phone;
+                this.accesstoken = sessionStorage.getItem('access_token');
+                var head2 = new http_1.Headers({
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Bearer ' + this.accesstoken
+                });
+                this.http.put(urlaccess, body2, { headers: head2 })
+                    .map(function (res) { return res.json(); }).catch(function (e) {
+                    if (e.status === 401) {
+                        return Observable_1.Observable.throw('Unauthorized');
+                    }
+                    // do any other checking for statuses here
+                })
+                    .subscribe(function (data) {
+                    _this.home();
+                    _this.router.navigate(['/admin']);
+                }, function (error) {
+                    if (error == "Unauthorized") {
+                        console.log(error);
+                        alert(error);
+                    }
+                    console.log(error + "suggested");
+                    $("#notifyss").show();
+                    setTimeout(function () { $("#notifyss").hide(); }, 5000);
+                });
+            }
+            else {
+                $("#notifyss").show();
+                setTimeout(function () { $("#notifyss").hide(); }, 5000);
+            }
+        }
+        else {
+            $("#notifyss").show();
+            setTimeout(function () { $("#notifyss").hide(); }, 5000);
         }
     };
     AdminComponent.prototype.passwordForm = function () {
@@ -297,12 +336,14 @@ var AdminComponent = (function () {
                     console.log(error);
                     alert(error);
                 }
-                // var notify = document.getElementById('notifys');
-                //  notify.style.display = 'block';
                 $("#notifyss").show();
                 setTimeout(function () { $("#notifyss").hide(); }, 5000);
                 console.log(error);
             });
+        }
+        else {
+            $("#notifyss").show();
+            setTimeout(function () { $("#notifyss").hide(); }, 5000);
         }
     };
     AdminComponent.prototype.changepassword = function () {

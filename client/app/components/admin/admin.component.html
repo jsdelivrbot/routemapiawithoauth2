@@ -1,9 +1,10 @@
-
+<div style="background-color: slategray">
 <!--main-->
 <div>
 
-  <h1 style="text-align: center"> Admin Logged </h1>
+  <h1 style="font-size: 50px;margin: 0px 390px 0px 450px;color: whitesmoke; font-family: 'Times New Roman', Times, serif">Admin Logged</h1>
 <hr/>
+</div>
 </div>
 <div class="alert alert-dismissible alert-success" id="alerttag">
                 <button type="button" class="close" data-dismiss="alert" (click)="dismiss()">×</button>
@@ -12,10 +13,10 @@
 
 
 <div class="col-lg-3 col-md-3 col-sm-4" style="width: 30%">
-            <div class="list-group table-of-contents">
-              <a class="list-group-item" (click)="home()">customer</a>
-              <a class="list-group-item" (click)="changepassword()">change password</a>
-              <a class="list-group-item" (click)="logout()">Logout</a>
+            <div class="list-group table-of-contents" >
+              <a class="list-group-item"  (click)="home()">customer</a>
+              <a class="list-group-item"  (click)="changepassword()">change password</a>
+              <a class="list-group-item"  (click)="logout()">Logout</a>
             
             </div>
 </div>
@@ -40,7 +41,7 @@
                     <td>{{data.code}}</td>
                     <td>{{data.username}}</td>
                     <td>{{data.api}}</td>
-                    <td><a id='edit' (click)="edit(data._id)" class="btn btn-success" style="float: left;">edit</a> <a (click)="remove(data._id)" class="btn btn-danger" style="float: left;margin-left: 10px">X</a></td>
+                    <td><a id='edit' (click)="edit(data._id)" class="btn btn-success" style="float: left;">Edit</a> <a (click)="remove(data._id)" class="btn btn-danger" style="float: left;margin-left: 10px">X</a></td>
                   </tr>
                   
                 </tbody>
@@ -130,7 +131,7 @@
                   </div>
                 </fieldset>
                 <div id='notifys' class="alert alert-dismissible alert-danger" style="display: none">
-                <strong>Something went wrong please try again</strong> 
+                <strong>password mismatch ,something went wrong,please try again</strong> 
               </div>  
               </form>
      

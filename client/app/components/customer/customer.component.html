@@ -1,9 +1,10 @@
-
+<div style="background-color: slategray">
 <!--main-->
 <div>
 
-  <h1 style="text-align: center"> Customer Logged </h1>
+  <h1 style="font-size: 50px;margin: 0px 390px 0px 450px;color: whitesmoke; font-family: 'Times New Roman', Times, serif">Customer Logged</h1>
 <hr/>
+</div>
 </div>
 <div id="alerttag" class="alert alert-dismissible alert-success" style="display: none">
                 <button type="button" class="close" data-dismiss="alert" (click)="dismiss()">×</button>
@@ -165,6 +166,43 @@
 
 </div>
 
+<!--location picker-->
+<div id="locationpicker">
+  <sebm-google-map 
+      [latitude]="lat"
+      [longitude]="lng"
+      [zoom]="zoom"
+      [disableDefaultUI]="false"
+      [zoomControl]="true"
+      (mapClick)="mapClicked($event)">
+    
+      <sebm-google-map-marker 
+          *ngFor="let m of markers2; let i = index"
+          (markerClick)="clickedMarker(m.label, i)"
+          [latitude]="m.lat"
+          [longitude]="m.lng"
+          [label]="m.label"
+          [markerDraggable]="m.draggable"
+          (dragEnd)="markerDragEnd(m, $event)">
+          
+        <sebm-google-map-info-window *ngFor="let m of markers; let i = index">
+          <strong>{{this.locationname}}</strong>
+        </sebm-google-map-info-window>
+        
+      </sebm-google-map-marker>
+      
+      <sebm-google-map-circle [latitude]="lat + 0.3" [longitude]="lng" 
+          [radius]="5000"
+          [fillColor]="'red'"
+          [circleDraggable]="true"
+          [editable]="true">
+      </sebm-google-map-circle>
+
+    </sebm-google-map>
+
+</div>
+
+
 
 
 <!--current services plan list-->
@@ -198,8 +236,8 @@
 </div>
 
 
-
-<div class="col-lg-12" style="float: left;width: 70%;display: none" id="addserviceplan">
+<div>
+<div class="col-lg-12" style="float: left;width: 80%;display: none;background-color: whitesmoke" id="addserviceplan">
             <div class="page-header">
               <h4 id="tables"> Service Plan   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  Date:{{model.date.day}}/{{model.date.month}}/{{model.date.year}}</h4>
             </div>
@@ -209,13 +247,48 @@
 <!-- this creates a google map on the page with the given lat/lng from -->
 <!-- the component as the initial center of the map: -->
 <div style="width:100%;float:left">
-<div style="width:70%;float:left" >
+
+<div style="width:30%;float:left;padding-left: 40px">
+<div style="width:100%;float: left">
+ <table id="serviceaddlist" class="table table-striped table-hover ">
+                <thead>
+                  <tr class="info">
+                    <th>Route Name</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Column content</td>
+
+                  </tr>
+                </tbody>
+              </table> 
+</div>
+           
+             <div id="mapform" style="width:100%;float:left">
+  <div class="jumbotron">
+      <input class="form-control" id="focusedInput" type="text" placeholder="areacode" [(ngModel)]="planareacode">
+                       
+                        <h6 style="margin-left: 130px"> or</h6>
+                    
+      <input class="form-control" id="focusedInput" type="text" placeholder="employee" [(ngModel)]="planemployee">
+             <br/>
+              <a (click)="plansearch()" class="btn btn-success" style="margin-left:50px">Show Request Location</a>
+              
+              </div>
+    
+</div>
+</div>
+<div style="width:70%;float:right;padding-left: 60px" >
 <sebm-google-map 
       [latitude]="lat"
       [longitude]="lng"
       [zoom]="zoom"
       [disableDefaultUI]="false"
-      [zoomControl]="true">
+      [zoomControl]="true"
+      >
     
       <sebm-google-map-marker 
           *ngFor="let m of markers; let i = index"
@@ -240,16 +313,8 @@
       </sebm-google-map-circle>
 
     </sebm-google-map>
-</div>   
-
-
-<div id="mapform" style="width:30%;float:left">
-  <div class="jumbotron">
-      <input class="form-control" id="focusedInput" type="text" value="This is focused...">
-      <input class="form-control" id="focusedInput" type="text" value="This is focused...">
-              </div>
-    
 </div>
+
 </div>
  </div>
 
@@ -284,7 +349,7 @@
                     <label for="inputPassword" class="col-lg-2 control-label">Location</label>
                     <div class="col-lg-10">
                       <input type="text" class="form-control"  name='location' id="location" placeholder="location" [(ngModel)]="location" required>
-                     <a  class="btn btn-primary" style="float: right;" (click)="addemployes()">+</a>
+                     <a  class="btn btn-primary" style="float: right;" (click)="addLocation(1)">+</a>
                      <p id="validate-status"></p>  
                     </div>
                     
@@ -445,7 +510,7 @@
                      <label for="inputEmail" class="col-lg-2 control-label">Location</label>
                       <div class="col-lg-10">
                       <input type="text" class="form-control" name='location' id="location" placeholder="Location" [(ngModel)]="location" required>
-                   <a  class="btn btn-primary" style="float: right;" (click)="addareacode()">+</a>
+                   <a  class="btn btn-primary" style="float: right;" (click)="addLocation(3)">+</a>
                     </div>
                   </div>
 
@@ -474,6 +539,8 @@
      
 </div>
 </div>
+
+
 
 
 <!--add service form-->
@@ -536,7 +603,7 @@
                      <label for="inputEmail" class="col-lg-2 control-label">Location</label>
                       <div class="col-lg-10">
                       <input type="text" class="form-control"  name='location' id="location" placeholder="Location" [(ngModel)]="location" required>
-                   <a  class="btn btn-primary" style="float: right;" (click)="addareacode()">+</a>
+                   <a  class="btn btn-primary" style="float: right;" (click)="addLocation(4)">+</a>
                     </div>
                   </div> 
 
@@ -616,7 +683,7 @@
                     <label for="inputPassword" class="col-lg-2 control-label">Location</label>
                     <div class="col-lg-10">
                       <input type="text" class="form-control"  name='location' id="location" placeholder="location" [(ngModel)]="location" required>
-                     <a  class="btn btn-primary" style="float: right;" (click)="addemployes()">+</a>
+                     <a  class="btn btn-primary" style="float: right;" (click)="addLocation(5)">+</a>
                      <p id="validate-status"></p>  
                     </div>
                     
@@ -777,7 +844,7 @@
                      <label for="inputEmail" class="col-lg-2 control-label">Location</label>
                       <div class="col-lg-10">
                       <input type="text" class="form-control" name='location' id="location" placeholder="Location" [(ngModel)]="location" required>
-                   <a  class="btn btn-primary" style="float: right;" (click)="addareacode()">+</a>
+                   <a  class="btn btn-primary" style="float: right;" (click)="addLocation(6)">+</a>
                     </div>
                   </div>
 
@@ -868,7 +935,7 @@
                      <label for="inputEmail" class="col-lg-2 control-label">Location</label>
                       <div class="col-lg-10">
                       <input type="text" class="form-control"  name='location' id="location" placeholder="Location" [(ngModel)]="location" required>
-                   <a  class="btn btn-primary" style="float: right;" (click)="addareacode()">+</a>
+                   <a  class="btn btn-primary" style="float: right;" (click)="addLocation(7)">+</a>
                     </div>
                   </div> 
 

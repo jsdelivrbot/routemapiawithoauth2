@@ -27,6 +27,8 @@ var CustomerComponent = (function () {
         // initial center position for the map
         this.lat = 51.673858;
         this.lng = 7.815982;
+        this.lat1 = 51.673858;
+        this.lng1 = 7.815982;
         this.markers = [
             {
                 lat: 51.673858,
@@ -69,19 +71,113 @@ var CustomerComponent = (function () {
         this.currentpassword = "";
         this.newpassword = "";
         this.cnewpassword = "";
+        this.planareacode = "";
+        this.planemployee = "";
     };
     CustomerComponent.prototype.clickedMarker = function (label, index) {
         console.log("clicked the marker: " + (label || index));
         this.locationname = label;
     };
+    CustomerComponent.prototype.plansearch = function () {
+        var _this = this;
+        console.log('plan search');
+        //    if employee name
+        if (this.planareacode == '') {
+            var url_1 = api_config_1.API.API_GetEmployeePlan + this.planemployee;
+            this.accesstoken = sessionStorage.getItem('access_token');
+            var head2_1 = new http_1.Headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Bearer ' + this.accesstoken
+            });
+            this.http.get(url_1, {
+                headers: head2_1
+            })
+                .map(function (res) {
+                return res.json();
+            }).catch(function (e) {
+                if (e.status === 401) {
+                    return Observable_1.Observable.throw('Unauthorized');
+                }
+                // do any other checking for statuses here
+            }).subscribe(function (data) {
+                console.log(JSON.stringify(data));
+                _this.planareacode = data.areacode;
+            }, function (error) {
+                if (error == "Unauthorized") {
+                    alert(error);
+                    console.log(error);
+                }
+            });
+        }
+        var dates2 = this.servicedate.date.day + '/' + this.servicedate.date.month + '/' + this.servicedate.date.year;
+        var url = api_config_1.API.API_GetServiceRequestPlan + this.planareacode + '/' + dates2;
+        this.accesstoken = sessionStorage.getItem('access_token');
+        var head2 = new http_1.Headers({
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Bearer ' + this.accesstoken
+        });
+        this.http.get(url, {
+            headers: head2
+        })
+            .map(function (res) {
+            return res.json();
+        }).catch(function (e) {
+            if (e.status === 401) {
+                return Observable_1.Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(function (data) {
+            console.log(JSON.stringify(data));
+            _this.markers = new Array();
+            //        for(var i=0;i<data.length;i++){
+            //        var temp_array = data[i].location.split(',');
+            //     //    this.markers.push({
+            //     //   lat: temp_array[0],
+            //     //   lng: temp_array[1]
+            //     // });    
+            //    }
+        }, function (error) {
+            if (error == "Unauthorized") {
+                alert(error);
+                console.log(error);
+            }
+        });
+    };
     CustomerComponent.prototype.markerDragEnd = function (m, $event) {
         console.log('dragEnd', m, $event);
+    };
+    CustomerComponent.prototype.mapClicked = function ($event) {
+        this.markers2 = new Array();
+        this.markers2.push({
+            lat: $event.coords.lat,
+            lng: $event.coords.lng
+        });
+        console.log(this.markers2[this.markers2.length - 1].lat, this.markers2[this.markers2.length - 1].lng);
+        this.location = this.markers2[this.markers2.length - 1].lat + ',' + this.markers2[this.markers2.length - 1].lng;
+        if (this.lastlocation == 1) {
+            this.addareacode();
+        }
+        else if (this.lastlocation == 3) {
+            this.addclient();
+        }
+        else if (this.lastlocation == 4) {
+            this.addservice();
+        }
+        else if (this.lastlocation == 5) {
+            this.editarea(sessionStorage.getItem('tempid'));
+        }
+        else if (this.lastlocation == 6) {
+            this.editclient(sessionStorage.getItem('tempid'));
+        }
+        else if (this.lastlocation == 7) {
+            this.editservice(sessionStorage.getItem('tempid'));
+        }
     };
     CustomerComponent.prototype.ngOnInit = function () {
         //called after the constructor and called  after the first ngOnChanges() 
         this.date();
-        var notify = document.getElementById('alerttag');
-        notify.style.display = 'block';
+        $("#alerttag").show();
+        setTimeout(function () { $("#alerttag").hide(); }, 5000);
         this.loadareacode();
     };
     CustomerComponent.prototype.ngAfterViewInit = function () {
@@ -158,6 +254,7 @@ var CustomerComponent = (function () {
         var employee = document.getElementById('employee');
         var servicereq = document.getElementById('servicereq');
         var serviceplan = document.getElementById('serviceplan');
+        var locationpicker = document.getElementById('locationpicker');
         var servicelist = document.getElementById('servicelist');
         var addserviceplan = document.getElementById('addserviceplan');
         var areacode = document.getElementById('addareacode');
@@ -173,6 +270,8 @@ var CustomerComponent = (function () {
         mapform.style.display = "none";
         var changepassword = document.getElementById('changepassword');
         changepassword.style.display = 'none';
+        locationpicker.style.display = 'none';
+        // serviceaddlist.style.display = 'none'
         editareacode.style.display = 'none';
         editemployee.style.display = 'none';
         editclient.style.display = 'none';
@@ -190,9 +289,11 @@ var CustomerComponent = (function () {
         servicereq.style.display = "none";
         client.style.display = "none";
         employee.style.display = "none";
-        this.reinitializeall();
+        if (this.selective == 1)
+            this.reinitializeall();
     };
     CustomerComponent.prototype.onAreacode = function () {
+        this.selective = 1;
         this.onNone();
         var area = document.getElementById('area');
         area.style.display = "block";
@@ -208,45 +309,61 @@ var CustomerComponent = (function () {
         var addemployee = document.getElementById('addemployees');
         addemployee.style.display = 'block';
     };
+    CustomerComponent.prototype.addLocation = function (name) {
+        this.selective = 2;
+        this.onNone();
+        this.lastlocation = name;
+        var locationpicker = document.getElementById('locationpicker');
+        locationpicker.style.display = 'block';
+        window.dispatchEvent(new Event("resize"));
+    };
     CustomerComponent.prototype.addclientstyle = function () {
+        this.selective = 2;
         this.onNone();
         var addclient = document.getElementById('addclient');
         addclient.style.display = 'block';
     };
     CustomerComponent.prototype.addservicestyle = function () {
+        this.selective = 2;
         this.onNone();
         var service = document.getElementById('addservice');
         service.style.display = 'block';
     };
     CustomerComponent.prototype.onEmployee = function () {
+        this.selective = 1;
         this.onNone();
         var employee = document.getElementById('employee');
         employee.style.display = "block";
         this.loademployee();
     };
     CustomerComponent.prototype.onClient = function () {
+        this.selective = 1;
         var client = document.getElementById('client');
         this.onNone();
         client.style.display = "block";
         this.loadclientsdetail();
     };
     CustomerComponent.prototype.onServicereq = function () {
+        this.selective = 1;
         var servicereq = document.getElementById('servicereq');
         this.onNone();
         servicereq.style.display = "block";
         this.loadservicerequestdetail();
     };
     CustomerComponent.prototype.onServiceplan = function () {
+        this.selective = 1;
         var serviceplan = document.getElementById('serviceplan');
         this.onNone();
         serviceplan.style.display = "block";
     };
     CustomerComponent.prototype.servicePlanClick = function () {
+        this.selective = 2;
         var servicelist = document.getElementById('servicelist');
         this.onNone();
         servicelist.style.display = "block";
     };
     CustomerComponent.prototype.addserviceplan = function () {
+        this.selective = 2;
         var addserviceplan = document.getElementById('addserviceplan');
         this.onNone();
         addserviceplan.style.display = "block";
@@ -255,6 +372,8 @@ var CustomerComponent = (function () {
         }, 1);
         var mapform = document.getElementById('mapform');
         mapform.style.display = "block";
+        // var serviceaddlist = document.getElementById('serviceaddlist')
+        // serviceaddlist.style.display = 'block'
     };
     CustomerComponent.prototype.logout = function () {
         sessionStorage.removeItem('currentUser');
@@ -285,6 +404,9 @@ var CustomerComponent = (function () {
                 if (e.status === 401) {
                     return Observable_1.Observable.throw('Unauthorized');
                 }
+                if (e.status === 422) {
+                    return Observable_1.Observable.throw('duplicate');
+                }
                 // do any other checking for statuses here
             })
                 .subscribe(function (data) {
@@ -295,12 +417,19 @@ var CustomerComponent = (function () {
                     console.log(error);
                     alert(error);
                 }
-                // var notify = document.getElementById('notifyss');
-                //    notify.style.display = 'block';
+                if (error == 'duplicate') {
+                    $("#notifyss1").show();
+                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                    console.log(error + 'reached duplicate');
+                }
                 $("#notifyss1").show();
                 setTimeout(function () { $("#notifyss1").hide(); }, 5000);
                 console.log(error);
             });
+        }
+        else {
+            $("#notifyss1").show();
+            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.addemployes = function () {
@@ -322,6 +451,9 @@ var CustomerComponent = (function () {
                 if (e.status === 401) {
                     return Observable_1.Observable.throw('Unauthorized');
                 }
+                if (e.status === 422) {
+                    return Observable_1.Observable.throw('duplicate');
+                }
                 // do any other checking for statuses here
             })
                 .subscribe(function (data) {
@@ -332,12 +464,20 @@ var CustomerComponent = (function () {
                     console.log(error);
                     alert(error);
                 }
+                if (error == 'duplicate') {
+                    $("#notifyss1").show();
+                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                }
                 // var notify = document.getElementById('notifyss');
                 //    notify.style.display = 'block';
                 $("#notifyss1").show();
                 setTimeout(function () { $("#notifyss1").hide(); }, 5000);
                 console.log(error);
             });
+        }
+        else {
+            $("#notifyss1").show();
+            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.addclient = function () {
@@ -366,6 +506,9 @@ var CustomerComponent = (function () {
                 if (e.status === 401) {
                     return Observable_1.Observable.throw('Unauthorized');
                 }
+                if (e.status === 422) {
+                    return Observable_1.Observable.throw('duplicate');
+                }
                 // do any other checking for statuses here
             })
                 .subscribe(function (data) {
@@ -376,12 +519,20 @@ var CustomerComponent = (function () {
                     console.log(error);
                     alert(error);
                 }
+                if (error == 'duplicate') {
+                    $("#notifyss1").show();
+                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                }
                 // var notify = document.getElementById('notifyss');
                 //    notify.style.display = 'block';
                 $("#notifyss1").show();
                 setTimeout(function () { $("#notifyss1").hide(); }, 5000);
                 console.log(error);
             });
+        }
+        else {
+            $("#notifyss1").show();
+            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.addservice = function () {
@@ -607,6 +758,9 @@ var CustomerComponent = (function () {
                 if (e.status === 401) {
                     return Observable_1.Observable.throw('Unauthorized');
                 }
+                if (e.status === 422) {
+                    return Observable_1.Observable.throw('duplicate');
+                }
                 // do any other checking for statuses here
             })
                 .subscribe(function (data) {
@@ -617,12 +771,20 @@ var CustomerComponent = (function () {
                     console.log(error);
                     alert(error);
                 }
+                if (error == 'duplicate') {
+                    $("#notifyss1").show();
+                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                }
                 // var notify = document.getElementById('notifyss');
                 //    notify.style.display = 'block';
                 $("#notifyss1").show();
                 setTimeout(function () { $("#notifyss1").hide(); }, 5000);
                 console.log(error);
             });
+        }
+        else {
+            $("#notifyss1").show();
+            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.removearea = function (id) {
@@ -746,6 +908,7 @@ var CustomerComponent = (function () {
         });
     };
     CustomerComponent.prototype.editarea = function (id) {
+        this.selective = 2;
         console.log('reached edit');
         sessionStorage.setItem('tempid', id);
         this.onNone();
@@ -754,6 +917,7 @@ var CustomerComponent = (function () {
         this.loadsingleareadata(id);
     };
     CustomerComponent.prototype.editemployee = function (id) {
+        this.selective = 2;
         console.log('reached edit');
         sessionStorage.setItem('tempid', id);
         this.onNone();
@@ -762,6 +926,7 @@ var CustomerComponent = (function () {
         this.loadsingleemployeedata(id);
     };
     CustomerComponent.prototype.editclient = function (id) {
+        this.selective = 2;
         console.log('reached edit');
         sessionStorage.setItem('tempid', id);
         this.onNone();
@@ -770,6 +935,7 @@ var CustomerComponent = (function () {
         this.loadsingleclientdata(id);
     };
     CustomerComponent.prototype.editservice = function (id) {
+        this.selective = 2;
         console.log('reached edit');
         sessionStorage.setItem('tempid', id);
         this.onNone();
@@ -974,6 +1140,9 @@ var CustomerComponent = (function () {
                 if (e.status === 401) {
                     return Observable_1.Observable.throw('Unauthorized');
                 }
+                if (e.status === 422) {
+                    return Observable_1.Observable.throw('duplicate');
+                }
                 // do any other checking for statuses here
             })
                 .subscribe(function (data) {
@@ -984,12 +1153,20 @@ var CustomerComponent = (function () {
                     console.log(error);
                     alert(error);
                 }
+                if (error == 'duplicate') {
+                    $("#notifyss1").show();
+                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                }
                 // var notify = document.getElementById('notifyss');
                 //    notify.style.display = 'block';
                 $("#notifyss1").show();
                 setTimeout(function () { $("#notifyss1").hide(); }, 5000);
                 console.log(error);
             });
+        }
+        else {
+            $("#notifyss1").show();
+            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.updateClientForm = function () {
@@ -1009,6 +1186,9 @@ var CustomerComponent = (function () {
                 if (e.status === 401) {
                     return Observable_1.Observable.throw('Unauthorized');
                 }
+                if (e.status === 422) {
+                    return Observable_1.Observable.throw('duplicate');
+                }
                 // do any other checking for statuses here
             })
                 .subscribe(function (data) {
@@ -1021,10 +1201,18 @@ var CustomerComponent = (function () {
                 }
                 // var notify = document.getElementById('notifyss');
                 //    notify.style.display = 'block';
+                if (error == 'duplicate') {
+                    $("#notifyss1").show();
+                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                }
                 $("#notifyss1").show();
                 setTimeout(function () { $("#notifyss1").hide(); }, 5000);
                 console.log(error);
             });
+        }
+        else {
+            $("#notifyss1").show();
+            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.updateAreaForm = function () {
@@ -1044,24 +1232,40 @@ var CustomerComponent = (function () {
                     return Observable_1.Observable.throw('Unauthorized');
                 }
                 // do any other checking for statuses here
+                if (e.status === 422) {
+                    return Observable_1.Observable.throw('duplicate');
+                }
             })
                 .subscribe(function (data) {
                 _this.onAreacode();
                 _this.router.navigate(['/customer']);
             }, function (error) {
                 if (error == "Unauthorized") {
-                    console.log(error);
+                    console.log(error + "dislaying error");
                     alert(error);
+                }
+                if (error == 'duplicate') {
+                    console.log(error);
+                    $("#notifyss1").show();
+                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                    window.alert("alreaady added data");
                 }
                 // var notify = document.getElementById('notifyss');
                 //    notify.style.display = 'block';
+                console.log(error);
                 $("#notifyss1").show();
                 setTimeout(function () { $("#notifyss1").hide(); }, 5000);
-                console.log(error);
+                window.alert("alreaady added data");
             });
+        }
+        else {
+            $("#notifyss1").show();
+            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+            window.alert("please fill all the fields");
         }
     };
     CustomerComponent.prototype.changepassword = function () {
+        this.selective = 1;
         this.onNone();
         var changepassword = document.getElementById('changepassword');
         changepassword.style.display = 'block';
@@ -1100,6 +1304,10 @@ var CustomerComponent = (function () {
                 setTimeout(function () { $("#notifyss").hide(); }, 5000);
                 console.log(error);
             });
+        }
+        else {
+            $("#notifyss").show();
+            setTimeout(function () { $("#notifyss").hide(); }, 5000);
         }
     };
     return CustomerComponent;

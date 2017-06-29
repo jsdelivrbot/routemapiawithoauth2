@@ -31,7 +31,42 @@ MongoClient.connect(url, function (err, db) {
 });
 
 
+// get employee plan
+router.get('/getemployeeplan/:id',function(req,res,next){
+    // find everything 
 
+
+MongoClient.connect(url, function (err, db) {
+  if (err) throw err
+
+  db.collection('users').find({username:req.params.id}).toArray(function (err, result) {
+    if (err) throw err
+
+    res.json(result);
+    
+  })
+})
+
+});
+
+
+// get service request plan
+router.get('/getservicerequestplan/:id/:id2',function(req,res,next){
+    // find everything 
+
+
+MongoClient.connect(url, function (err, db) {
+  if (err) throw err
+
+  db.collection('servicerequest').find({$and: [{areacode:req.params.id},{servicedate:req.params.id2}]}).toArray(function (err, result) {
+    if (err) throw err
+
+    res.json(result);
+    
+  })
+})
+
+});
 
 
 // single task
@@ -319,7 +354,7 @@ res.json({
 
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
-db.collection('areacode').findOne({areaname: areaname}, function (err, user) {
+db.collection('areacode').findOne({areacode: code}, function (err, user) {
             if(user) {
                 res.send("areaname is already taken", 422)
             }else{
