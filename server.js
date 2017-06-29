@@ -32,6 +32,10 @@ app.engine('html',require('ejs').renderFile);
 // set static folder
 app.use(express.static(path.join(__dirname,'client')));
 
+app.use('/img',express.static(path.join(__dirname, 'public/images')));
+
+
+
 // body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));

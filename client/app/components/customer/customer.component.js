@@ -81,35 +81,8 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.plansearch = function () {
         var _this = this;
         console.log('plan search');
-        //    if employee name
-        if (this.planareacode == '') {
-            var url_1 = api_config_1.API.API_GetEmployeePlan + this.planemployee;
-            this.accesstoken = sessionStorage.getItem('access_token');
-            var head2_1 = new http_1.Headers({
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Bearer ' + this.accesstoken
-            });
-            this.http.get(url_1, {
-                headers: head2_1
-            })
-                .map(function (res) {
-                return res.json();
-            }).catch(function (e) {
-                if (e.status === 401) {
-                    return Observable_1.Observable.throw('Unauthorized');
-                }
-                // do any other checking for statuses here
-            }).subscribe(function (data) {
-                console.log(JSON.stringify(data));
-                _this.planareacode = data.areacode;
-            }, function (error) {
-                if (error == "Unauthorized") {
-                    alert(error);
-                    console.log(error);
-                }
-            });
-        }
-        var dates2 = this.servicedate.date.day + '/' + this.servicedate.date.month + '/' + this.servicedate.date.year;
+        var dates2 = this.model.date.day + '-' + this.model.date.month + '-' + this.model.date.year;
+        console.log(dates2);
         var url = api_config_1.API.API_GetServiceRequestPlan + this.planareacode + '/' + dates2;
         this.accesstoken = sessionStorage.getItem('access_token');
         var head2 = new http_1.Headers({
@@ -127,15 +100,19 @@ var CustomerComponent = (function () {
             }
             // do any other checking for statuses here
         }).subscribe(function (data) {
-            console.log(JSON.stringify(data));
-            _this.markers = new Array();
-            //        for(var i=0;i<data.length;i++){
-            //        var temp_array = data[i].location.split(',');
-            //     //    this.markers.push({
-            //     //   lat: temp_array[0],
-            //     //   lng: temp_array[1]
-            //     // });    
-            //    }
+            console.log(data);
+            _this.markers = Array();
+            for (var i = 0; i < data.length; i++) {
+                var temp_array = (data[i].location).split(',');
+                _this.markers.push({
+                    lat: Number(temp_array[0]),
+                    lng: Number(temp_array[1]),
+                    draggable: false,
+                    label: data[i].clientname + '\n' + data[i]._id
+                });
+            }
+            window.dispatchEvent(new Event("resize"));
+            console.log(_this.markers);
         }, function (error) {
             if (error == "Unauthorized") {
                 alert(error);
@@ -266,6 +243,8 @@ var CustomerComponent = (function () {
         var editemployee = document.getElementById('editemployee');
         var editclient = document.getElementById('editclient');
         var editservice = document.getElementById('editservice');
+        var popup = document.getElementById('popup');
+        popup.style.display = 'none';
         var mapform = document.getElementById('mapform');
         mapform.style.display = "none";
         var changepassword = document.getElementById('changepassword');
@@ -303,6 +282,14 @@ var CustomerComponent = (function () {
         this.onNone();
         var areacode = document.getElementById('addareacode');
         areacode.style.display = 'block';
+    };
+    CustomerComponent.prototype.popupshow = function () {
+        var popup = document.getElementById('popup');
+        popup.style.display = 'block';
+    };
+    CustomerComponent.prototype.popuphide = function () {
+        var popup = document.getElementById('popup');
+        popup.style.display = 'none';
     };
     CustomerComponent.prototype.addemployestyle = function () {
         this.onNone();
@@ -372,6 +359,8 @@ var CustomerComponent = (function () {
         }, 1);
         var mapform = document.getElementById('mapform');
         mapform.style.display = "block";
+        this.planemployee = '';
+        this.loademployee();
         // var serviceaddlist = document.getElementById('serviceaddlist')
         // serviceaddlist.style.display = 'block'
     };
@@ -391,7 +380,7 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.areaForm = function () {
         var _this = this;
         // update area code form
-        if (this.code != '' && this.areaname != '' && this.location != '') {
+        if (this.code != null && this.areaname != null && this.location != null) {
             var url = api_config_1.API.API_AddAreacode;
             var body2 = "code=" + this.code + "&areaname=" + this.areaname + '&location=' + this.location;
             this.accesstoken = sessionStorage.getItem('access_token');
@@ -415,21 +404,28 @@ var CustomerComponent = (function () {
             }, function (error) {
                 if (error == "Unauthorized") {
                     console.log(error);
-                    alert(error);
+                    _this.message = 'unauthorized user';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
                 if (error == 'duplicate') {
-                    $("#notifyss1").show();
-                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                    _this.message = 'username already exist';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                     console.log(error + 'reached duplicate');
                 }
-                $("#notifyss1").show();
-                setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                else {
+                    _this.message = 'unknown error';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
+                }
                 console.log(error);
             });
         }
         else {
-            $("#notifyss1").show();
-            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+            this.message = 'parameters not send properly';
+            $("#popup").show();
+            setTimeout(function () { $("#popup").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.addemployes = function () {
@@ -438,46 +434,58 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.employeeForm = function () {
         // add employee
         var _this = this;
-        if (this.code != '' && this.areacode != '' && this.password != '' && this.name != '' && this.phone != '' && this.address != '') {
-            var url = api_config_1.API.API_AddEmployee;
-            var body2 = "code=" + this.code + "&areacode=" + this.areacode + '&name=' + this.name + '&password=' + this.password + '&phone=' + this.phone + '&address=' + this.address;
-            this.accesstoken = sessionStorage.getItem('access_token');
-            var head2 = new http_1.Headers({
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Bearer ' + this.accesstoken
-            });
-            this.http.post(url, body2, { headers: head2 })
-                .map(function (res) { return res.json(); }).catch(function (e) {
-                if (e.status === 401) {
-                    return Observable_1.Observable.throw('Unauthorized');
-                }
-                if (e.status === 422) {
-                    return Observable_1.Observable.throw('duplicate');
-                }
-                // do any other checking for statuses here
-            })
-                .subscribe(function (data) {
-                _this.onEmployee();
-                _this.router.navigate(['/customer']);
-            }, function (error) {
-                if (error == "Unauthorized") {
+        if (this.code != null && this.areacode != null && this.password != null && this.name != null && this.phone != null && this.address != null) {
+            if (this.password == this.cnewpassword) {
+                var url = api_config_1.API.API_AddEmployee;
+                var body2 = "code=" + this.code + "&areacode=" + this.areacode + '&name=' + this.name + '&password=' + this.password + '&phone=' + this.phone + '&address=' + this.address;
+                this.accesstoken = sessionStorage.getItem('access_token');
+                var head2 = new http_1.Headers({
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Bearer ' + this.accesstoken
+                });
+                this.http.post(url, body2, { headers: head2 })
+                    .map(function (res) { return res.json(); }).catch(function (e) {
+                    if (e.status === 401) {
+                        return Observable_1.Observable.throw('Unauthorized');
+                    }
+                    if (e.status === 422) {
+                        return Observable_1.Observable.throw('duplicate');
+                    }
+                    // do any other checking for statuses here
+                })
+                    .subscribe(function (data) {
+                    _this.onEmployee();
+                    _this.router.navigate(['/customer']);
+                }, function (error) {
+                    if (error == "Unauthorized") {
+                        console.log(error);
+                        _this.message = 'unauthorized user';
+                        $("#popup").show();
+                        setTimeout(function () { $("#popup").hide(); }, 5000);
+                    }
+                    if (error == 'duplicate') {
+                        _this.message = 'username already exist';
+                        $("#popup").show();
+                        setTimeout(function () { $("#popup").hide(); }, 5000);
+                    }
+                    else {
+                        _this.message = 'unknown error';
+                        $("#popup").show();
+                        setTimeout(function () { $("#popup").hide(); }, 5000);
+                    }
                     console.log(error);
-                    alert(error);
-                }
-                if (error == 'duplicate') {
-                    $("#notifyss1").show();
-                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
-                }
-                // var notify = document.getElementById('notifyss');
-                //    notify.style.display = 'block';
-                $("#notifyss1").show();
-                setTimeout(function () { $("#notifyss1").hide(); }, 5000);
-                console.log(error);
-            });
+                });
+            }
+            else {
+                this.message = 'password mismatch';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
+            }
         }
         else {
-            $("#notifyss1").show();
-            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+            this.message = 'parameters not send properly';
+            $("#popup").show();
+            setTimeout(function () { $("#popup").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.addclient = function () {
@@ -489,10 +497,14 @@ var CustomerComponent = (function () {
         console.log(newValue);
         this.selectedvalue = newValue;
     };
+    CustomerComponent.prototype.onChangeplan = function (val) {
+        console.log(val);
+        this.planareacode = val;
+    };
     CustomerComponent.prototype.clientForm = function () {
         // add client
         var _this = this;
-        if (this.code != '' && this.areacode != '' && this.name != '' && this.phone != '' && this.address != '' && this.mobile != '') {
+        if (this.code != null && this.areacode != null && this.name != null && this.phone != null && this.address != null && this.mobile != null) {
             var url = api_config_1.API.API_AddClient;
             console.log(this.selectedvalue);
             var body2 = "clientcode=" + this.code + "&areacode=" + this.selectedvalue + '&clientname=' + this.name + '&address=' + this.address + '&phone=' + this.phone + '&mobile=' + this.mobile + '&location=' + this.location + '&extraroadpoints=' + this.extraroadpoints;
@@ -509,6 +521,9 @@ var CustomerComponent = (function () {
                 if (e.status === 422) {
                     return Observable_1.Observable.throw('duplicate');
                 }
+                else {
+                    return Observable_1.Observable.throw('unknown');
+                }
                 // do any other checking for statuses here
             })
                 .subscribe(function (data) {
@@ -517,22 +532,28 @@ var CustomerComponent = (function () {
             }, function (error) {
                 if (error == "Unauthorized") {
                     console.log(error);
-                    alert(error);
+                    _this.message = 'unauthorized user';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
                 if (error == 'duplicate') {
-                    $("#notifyss1").show();
-                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                    _this.message = 'username already exist';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
-                // var notify = document.getElementById('notifyss');
-                //    notify.style.display = 'block';
-                $("#notifyss1").show();
-                setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                else {
+                    _this.message = 'unkown error';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
+                }
                 console.log(error);
             });
         }
         else {
-            $("#notifyss1").show();
-            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+            console.log('parameters not found');
+            this.message = 'parameters not send properly';
+            $("#popup").show();
+            setTimeout(function () { $("#popup").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.addservice = function () {
@@ -564,7 +585,9 @@ var CustomerComponent = (function () {
             _this.areacodearray = data;
         }, function (error) {
             if (error == "Unauthorized") {
-                alert(error);
+                _this.message = 'unauthorized user';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
                 console.log(error);
             }
         });
@@ -591,16 +614,30 @@ var CustomerComponent = (function () {
             // do any other checking for statuses here
         }).subscribe(function (data) {
             console.log(JSON.stringify(data));
-            _this.name = data.clientname;
-            _this.phone = data.phone;
-            _this.aphone = data.mobile;
-            _this.address = data.address;
-            _this.location = data.location;
-            _this.areacode = data.areacode;
+            if (data == null) {
+                _this.message = 'no users found';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
+            }
+            else {
+                _this.name = data.clientname;
+                _this.phone = data.phone;
+                _this.aphone = data.mobile;
+                _this.address = data.address;
+                _this.location = data.location;
+                _this.areacode = data.areacode;
+            }
         }, function (error) {
             if (error == "Unauthorized") {
                 alert(error);
-                console.log(error);
+                _this.message = 'unauthorized user';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
+            }
+            else {
+                _this.message = 'users not found';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
             }
         });
     };
@@ -631,8 +668,14 @@ var CustomerComponent = (function () {
             _this.reInitDatatable();
         }, function (error) {
             if (error == "Unauthorized") {
-                alert(error);
-                console.log(error);
+                _this.message = 'unauthorized user';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
+            }
+            else {
+                _this.message = 'no user found';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
             }
         });
     };
@@ -747,7 +790,7 @@ var CustomerComponent = (function () {
         if (this.code != '') {
             var url = api_config_1.API.API_AddServicerequest;
             console.log(this.selectedvalue);
-            var body2 = "clientcode=" + this.code + "&areacode=" + this.areacode + '&clientname=' + this.name + '&address=' + this.address + '&phone=' + this.phone + '&mobile=' + this.mobile + '&location=' + this.location + '&requesttype=' + this.requesttype + '&bookingdate=' + dates + '&servicedate=' + dates2;
+            var body2 = "clientcode=" + this.code + "&areacode=" + this.areacode + '&clientname=' + this.name + '&address=' + this.address + '&phone=' + this.phone + '&mobile=' + this.aphone + '&location=' + this.location + '&requesttype=' + this.requesttype + '&bookingdate=' + dates + '&servicedate=' + dates2;
             this.accesstoken = sessionStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -769,22 +812,27 @@ var CustomerComponent = (function () {
             }, function (error) {
                 if (error == "Unauthorized") {
                     console.log(error);
-                    alert(error);
+                    _this.message = 'unauthorized user';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
                 if (error == 'duplicate') {
-                    $("#notifyss1").show();
-                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                    _this.message = 'unauthorized user';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
-                // var notify = document.getElementById('notifyss');
-                //    notify.style.display = 'block';
-                $("#notifyss1").show();
-                setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                else {
+                    _this.message = 'unknown error';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
+                }
                 console.log(error);
             });
         }
         else {
-            $("#notifyss1").show();
-            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+            this.message = 'parameters not send properly ';
+            $("#popup").show();
+            setTimeout(function () { $("#popup").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.removearea = function (id) {
@@ -1028,7 +1076,7 @@ var CustomerComponent = (function () {
             // do any other checking for statuses here
         }).subscribe(function (data) {
             console.log(JSON.stringify(data));
-            _this.code = data.clientcode;
+            _this.code = data.code;
             _this.name = data.clientname;
             _this.mobile = data.mobile;
             _this.extraroadpoints = data.extraroadpoints;
@@ -1063,7 +1111,7 @@ var CustomerComponent = (function () {
             // do any other checking for statuses here
         }).subscribe(function (data) {
             console.log(JSON.stringify(data));
-            _this.code = data.clientcode;
+            _this.code = data.code;
             _this.name = data.clientname;
             _this.aphone = data.mobile;
             _this.areacode = data.areacode;
@@ -1095,7 +1143,7 @@ var CustomerComponent = (function () {
         if (this.code != '') {
             var url = api_config_1.API.API_UpdateServicerequest + id;
             console.log(this.selectedvalue);
-            var body2 = "clientcode=" + this.code + "&areacode=" + this.areacode + '&clientname=' + this.name + '&address=' + this.address + '&phone=' + this.phone + '&mobile=' + this.mobile + '&location=' + this.location + '&requesttype=' + this.requesttype + '&bookingdate=' + dates + '&servicedate=' + dates2;
+            var body2 = "clientcode=" + this.code + "&areacode=" + this.areacode + '&clientname=' + this.name + '&address=' + this.address + '&phone=' + this.phone + '&mobile=' + this.aphone + '&location=' + this.location + '&requesttype=' + this.requesttype + '&bookingdate=' + dates + '&servicedate=' + dates2;
             this.accesstoken = sessionStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -1114,13 +1162,16 @@ var CustomerComponent = (function () {
             }, function (error) {
                 if (error == "Unauthorized") {
                     console.log(error);
-                    alert(error);
+                    _this.message = 'unauthorized user';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
-                // var notify = document.getElementById('notifyss');
-                //    notify.style.display = 'block';
-                $("#notifyss1").show();
-                setTimeout(function () { $("#notifyss1").hide(); }, 5000);
-                console.log(error);
+                else {
+                    _this.message = 'unknown error';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
+                    console.log(error);
+                }
             });
         }
     };
@@ -1151,28 +1202,33 @@ var CustomerComponent = (function () {
             }, function (error) {
                 if (error == "Unauthorized") {
                     console.log(error);
-                    alert(error);
+                    _this.message = 'unauthorized user';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
                 if (error == 'duplicate') {
-                    $("#notifyss1").show();
-                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                    _this.message = 'username already present';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
-                // var notify = document.getElementById('notifyss');
-                //    notify.style.display = 'block';
-                $("#notifyss1").show();
-                setTimeout(function () { $("#notifyss1").hide(); }, 5000);
-                console.log(error);
+                else {
+                    _this.message = 'unknown error';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
+                    console.log(error);
+                }
             });
         }
         else {
-            $("#notifyss1").show();
-            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+            this.message = 'parameters not send properly';
+            $("#popup").show();
+            setTimeout(function () { $("#popup").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.updateClientForm = function () {
         var _this = this;
         var id = sessionStorage.getItem('tempid');
-        if (this.code != '' && this.areacode != '' && this.name != '' && this.phone != '' && this.address != '' && this.mobile != '') {
+        if (this.code != null && this.areacode != null && this.name != null && this.phone != null && this.address != null && this.mobile != null) {
             var url = api_config_1.API.API_UpdateClient + id;
             console.log(this.selectedvalue);
             var body2 = "clientcode=" + this.code + "&areacode=" + this.selectedvalue + '&clientname=' + this.name + '&address=' + this.address + '&phone=' + this.phone + '&mobile=' + this.mobile + '&location=' + this.location + '&extraroadpoints=' + this.extraroadpoints;
@@ -1197,22 +1253,25 @@ var CustomerComponent = (function () {
             }, function (error) {
                 if (error == "Unauthorized") {
                     console.log(error);
-                    alert(error);
+                    _this.message = 'unauthorized user';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
-                // var notify = document.getElementById('notifyss');
-                //    notify.style.display = 'block';
                 if (error == 'duplicate') {
-                    $("#notifyss1").show();
-                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                    _this.message = 'username already exist';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
-                $("#notifyss1").show();
-                setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+                _this.message = 'unknown error';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
                 console.log(error);
             });
         }
         else {
-            $("#notifyss1").show();
-            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
+            this.message = 'parameter not send properly';
+            $("#popup").show();
+            setTimeout(function () { $("#popup").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.updateAreaForm = function () {
@@ -1242,26 +1301,28 @@ var CustomerComponent = (function () {
             }, function (error) {
                 if (error == "Unauthorized") {
                     console.log(error + "dislaying error");
-                    alert(error);
+                    _this.message = 'unauthorized user';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
                 if (error == 'duplicate') {
                     console.log(error);
-                    $("#notifyss1").show();
-                    setTimeout(function () { $("#notifyss1").hide(); }, 5000);
-                    window.alert("alreaady added data");
+                    _this.message = 'username already exist';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
                 // var notify = document.getElementById('notifyss');
                 //    notify.style.display = 'block';
                 console.log(error);
-                $("#notifyss1").show();
-                setTimeout(function () { $("#notifyss1").hide(); }, 5000);
-                window.alert("alreaady added data");
+                _this.message = 'unknown error';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
             });
         }
         else {
-            $("#notifyss1").show();
-            setTimeout(function () { $("#notifyss1").hide(); }, 5000);
-            window.alert("please fill all the fields");
+            this.message = 'parameter not send properly';
+            $("#popup").show();
+            setTimeout(function () { $("#popup").hide(); }, 5000);
         }
     };
     CustomerComponent.prototype.changepassword = function () {
@@ -1296,18 +1357,20 @@ var CustomerComponent = (function () {
             }, function (error) {
                 if (error == "Unauthorized") {
                     console.log(error);
-                    alert(error);
+                    _this.message = 'unauthorized user';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
                 }
-                // var notify = document.getElementById('notifys');
-                //  notify.style.display = 'block';
-                $("#notifyss").show();
-                setTimeout(function () { $("#notifyss").hide(); }, 5000);
+                _this.message = 'unknown error';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
                 console.log(error);
             });
         }
         else {
-            $("#notifyss").show();
-            setTimeout(function () { $("#notifyss").hide(); }, 5000);
+            this.message = 'parameters not send properly';
+            $("#popup").show();
+            setTimeout(function () { $("#popup").hide(); }, 5000);
         }
     };
     return CustomerComponent;

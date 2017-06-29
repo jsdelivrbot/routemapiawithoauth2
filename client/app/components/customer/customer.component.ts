@@ -14,6 +14,7 @@ import 'datatables.net';
 import {AgmCoreModule} from 'angular2-google-maps/core';
 
 
+
 @Component({
   moduleId: module.id,
   selector: 'tasks',
@@ -81,7 +82,7 @@ public clientdetails:any;
     public lastlocation:any;
     public planareacode:any
     public planemployee:any
-
+    public message:any;
     reinitializeall(){
         this.name="";
   this.password="";
@@ -125,49 +126,24 @@ this.planemployee=""
 	  }
   ]
 
+
+
 clickedMarker(label: string, index: number) {
     console.log(`clicked the marker: ${label || index}`)
-    
+     for (let i = 0; i < this.markers.length; i++) {
+            if (i != index) {
+                this.markers[i].isOpen = false;
+            }else
+               this.markers[i].isOpen = true;
+        }
     this.locationname = label;  
 }
   
 
 plansearch(){
    console.log('plan search')
-
-//    if employee name
-   if(this.planareacode == ''){
-   let url = API.API_GetEmployeePlan+this.planemployee;
-    this.accesstoken=sessionStorage.getItem('access_token')
-             let head2 = new Headers({
-             'Content-Type': 'application/x-www-form-urlencoded',
-             'Authorization':'Bearer '+ this.accesstoken
-    });
-
-  this.http.get(url,{
-      headers: head2
-    })
-    .map(res =>  {
-            return res.json();
-}).catch(e => {
-            if (e.status === 401) {
-                return Observable.throw('Unauthorized');
-            }
-            // do any other checking for statuses here
-        }).subscribe(data => {
-       console.log(JSON.stringify(data));
-       
-       this.planareacode = data.areacode;
-       
-}, error => {
-if(error=="Unauthorized"){
-alert(error);
-console.log(error);
-}
-});      
-
-   }
-    var dates2 =this.servicedate.date.day+'/'+this.servicedate.date.month+'/'+this.servicedate.date.year;
+   var dates2 =this.model.date.day+'-'+this.model.date.month+'-'+this.model.date.year;
+    console.log(dates2)
        let url = API.API_GetServiceRequestPlan+this.planareacode+'/'+dates2;
     this.accesstoken=sessionStorage.getItem('access_token')
              let head2 = new Headers({
@@ -186,16 +162,20 @@ console.log(error);
             }
             // do any other checking for statuses here
         }).subscribe(data => {
-       console.log(JSON.stringify(data));
-       this.markers = new Array()
-//        for(var i=0;i<data.length;i++){
-//        var temp_array = data[i].location.split(',');
-//     //    this.markers.push({
-//     //   lat: temp_array[0],
-//     //   lng: temp_array[1]
-//     // });    
-//    }
-    
+       console.log(data);
+       this.markers = Array() 
+       for(var i=0;i<data.length;i++){
+       var temp_array = (data[i].location).split(',');
+       this.markers.push({
+      lat: Number(temp_array[0]),
+      lng: Number(temp_array[1]),
+      draggable:false,
+      label:data[i].clientname + '\n' + data[i]._id,
+      isOpen:false
+    });    
+   }
+   window.dispatchEvent(new Event("resize"));
+    console.log(this.markers)
 }, error => {
 if(error=="Unauthorized"){
 alert(error);
@@ -373,6 +353,11 @@ var editemployee = document.getElementById('editemployee')
 var editclient   = document.getElementById('editclient')
 var editservice = document.getElementById('editservice')
 
+var popup = document.getElementById('popup')
+popup.style.display = 'none'
+
+
+
 var mapform = document.getElementById('mapform')
 mapform.style.display= "none"
 
@@ -425,6 +410,15 @@ var areacode = document.getElementById('addareacode');
 areacode.style.display='block';
 }
 
+popupshow(){
+    var popup = document.getElementById('popup')
+    popup.style.display = 'block'
+}
+
+popuphide(){
+    var popup = document.getElementById('popup')
+    popup.style.display = 'none'
+}
 
 addemployestyle(){
    
@@ -487,6 +481,7 @@ onServiceplan(){
 this.selective=1
 var serviceplan = document.getElementById('serviceplan');
 this.onNone();
+
 serviceplan.style.display="block";
 }
 
@@ -508,7 +503,8 @@ window.dispatchEvent(new Event("resize"));
 }, 1);
 var mapform = document.getElementById('mapform')
 mapform.style.display= "block"
-
+this.planemployee = ''
+this.loademployee()
 
 // var serviceaddlist = document.getElementById('serviceaddlist')
 // serviceaddlist.style.display = 'block'
@@ -538,7 +534,7 @@ this.addAreacodestyle();
 
 areaForm(){
 // update area code form
-      if(this.code != '' && this.areaname != '' && this.location !=''){
+      if(this.code != null && this.areaname != null && this.location !=null){
        let url = API.API_AddAreacode;
              let body2 = "code="+this.code+"&areaname="+this.areaname+'&location='+this.location;
              this.accesstoken=sessionStorage.getItem('access_token')
@@ -564,27 +560,31 @@ areaForm(){
      }, error => {
        if(error=="Unauthorized"){
        console.log(error);
-       alert(error);
-    
+       this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
   }
 
 if(error == 'duplicate'){
-     $("#notifyss1").show();
-        setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+    this.message='username already exist'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
    
      
                console.log(error+'reached duplicate');
+}else{
+    this.message='unknown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
 }
-     $("#notifyss1").show();
-        setTimeout(function() { $("#notifyss1").hide(); }, 5000);
-   
      
                console.log(error);
              
             });
       }else{
-          $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+          this.message='parameters not send properly'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
       }
 }
 
@@ -597,7 +597,8 @@ this.addemployestyle();
 employeeForm(){
 // add employee
 
-if(this.code != '' && this.areacode !='' && this.password != '' && this.name !='' && this.phone !='' && this.address != ''){
+if(this.code != null && this.areacode != null && this.password != null && this.name != null && this.phone != null && this.address != null){
+     if(this.password == this.cnewpassword){
        let url = API.API_AddEmployee;
              let body2 = "code="+this.code+"&areacode="+this.areacode+'&name='+this.name+'&password='+this.password+'&phone='+this.phone+'&address='+this.address;
              this.accesstoken=sessionStorage.getItem('access_token')
@@ -622,27 +623,36 @@ if(this.code != '' && this.areacode !='' && this.password != '' && this.name !='
      }, error => {
        if(error=="Unauthorized"){
        console.log(error);
-       alert(error);
+       this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
     
   }
 
   if(error == 'duplicate'){
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);    
-  }
-  // var notify = document.getElementById('notifyss');
-  //    notify.style.display = 'block';
+  this.message='username already exist'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+  }else{
+ 
   
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
-   
+ this.message='unknown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+  }
      
                console.log(error);
              
             });
+     }else{
+         this.message='password mismatch'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+     }
 }else{
-    $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+   this.message='parameters not send properly'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
 }
 
 }
@@ -659,10 +669,15 @@ onChange(newValue) {
     
 }
 
+onChangeplan(val){
+console.log(val);
+this.planareacode=val
+}
+
 clientForm(){
 // add client
 
-if(this.code != '' && this.areacode !='' && this.name !='' && this.phone !='' && this.address != '' && this.mobile !=''){
+if(this.code != null && this.areacode !=null && this.name !=null && this.phone !=null && this.address != null && this.mobile !=null){
        let url = API.API_AddClient;
        console.log(this.selectedvalue);
              let body2 = "clientcode="+this.code+"&areacode="+this.selectedvalue+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.mobile+'&location='+this.location+'&extraroadpoints='+this.extraroadpoints;
@@ -680,6 +695,8 @@ if(this.code != '' && this.areacode !='' && this.name !='' && this.phone !='' &&
 
             if (e.status === 422) {
                 return Observable.throw('duplicate');
+            }else{
+                return Observable.throw('unknown');
             }
             // do any other checking for statuses here
         })
@@ -689,27 +706,31 @@ if(this.code != '' && this.areacode !='' && this.name !='' && this.phone !='' &&
      }, error => {
        if(error=="Unauthorized"){
        console.log(error);
-       alert(error);
+     this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
     
   }
 
   if(error == 'duplicate'){
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);    
-  }
-  // var notify = document.getElementById('notifyss');
-  //    notify.style.display = 'block';
+  this.message='username already exist'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+  }else{
   
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
-   
+this.message='unkown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+  }   
      
                console.log(error);
-             
+ 
             });
 }else{
-    $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+    console.log('parameters not found')
+ this.message='parameters not send properly'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
 }
 
 
@@ -746,8 +767,10 @@ let url = API.API_GetAreacode;
        
 }, error => {
 if(error=="Unauthorized"){
-alert(error);
-console.log(error);
+this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+        console.log(error);
 }
 });      
 
@@ -778,17 +801,28 @@ let url = API.API_GetClientcodedetail+this.code;
             // do any other checking for statuses here
         }).subscribe(data => {
        console.log(JSON.stringify(data));
+       if(data == null){
+           this.message='no users found'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+       }else{
       this.name = data.clientname;
       this.phone = data.phone;
       this.aphone = data.mobile;
       this.address = data.address;
       this.location = data.location;
       this.areacode = data.areacode;
-       
+       }
 }, error => {
 if(error=="Unauthorized"){
 alert(error);
-console.log(error);
+this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+}else{
+    this.message='users not found'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
 }
 });      
 
@@ -823,8 +857,13 @@ let url = API.API_GetClients;
        this.reInitDatatable();
 }, error => {
 if(error=="Unauthorized"){
-alert(error);
-console.log(error);
+this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+}else{
+    this.message='no user found'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
 }
 });      
 
@@ -952,7 +991,7 @@ servicereqstForm(){
     if(this.code != '' ){
        let url = API.API_AddServicerequest;
        console.log(this.selectedvalue);
-             let body2 = "clientcode="+this.code+"&areacode="+this.areacode+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.mobile+'&location='+this.location+'&requesttype='+this.requesttype+'&bookingdate='+dates+'&servicedate='+dates2;
+             let body2 = "clientcode="+this.code+"&areacode="+this.areacode+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.aphone+'&location='+this.location+'&requesttype='+this.requesttype+'&bookingdate='+dates+'&servicedate='+dates2;
              this.accesstoken=sessionStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
@@ -977,29 +1016,30 @@ servicereqstForm(){
      }, error => {
        if(error=="Unauthorized"){
        console.log(error);
-       alert(error);
+      this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
     
   }
 
   if(error == 'duplicate'){
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);    
+  this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+}else{
+
+this.message='unknown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
 }
-
-
-  // var notify = document.getElementById('notifyss');
-  //    notify.style.display = 'block';
-  
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
-   
      
                console.log(error);
              
             });
 }else{
-    $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+ this.message='parameters not send properly '
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
 }
 }
 
@@ -1267,7 +1307,7 @@ let url = API.API_GetCustomer+id;
             // do any other checking for statuses here
         }).subscribe(data => {
        console.log(JSON.stringify(data));
-       this.code=data.clientcode;
+       this.code=data.code;
        this.name=data.clientname;
        this.mobile=data.mobile;
        this.extraroadpoints=data.extraroadpoints;
@@ -1305,7 +1345,7 @@ let url = API.API_GetServicerequest+id;
             // do any other checking for statuses here
         }).subscribe(data => {
        console.log(JSON.stringify(data));
-       this.code=data.clientcode;
+       this.code=data.code;
        this.name=data.clientname;
        this.aphone=data.mobile;
        this.areacode=data.areacode;
@@ -1341,7 +1381,7 @@ updateServiceForm(){
     if(this.code != '' ){
        let url = API.API_UpdateServicerequest+id;
        console.log(this.selectedvalue);
-             let body2 = "clientcode="+this.code+"&areacode="+this.areacode+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.mobile+'&location='+this.location+'&requesttype='+this.requesttype+'&bookingdate='+dates+'&servicedate='+dates2;
+             let body2 = "clientcode="+this.code+"&areacode="+this.areacode+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.aphone+'&location='+this.location+'&requesttype='+this.requesttype+'&bookingdate='+dates+'&servicedate='+dates2;
              this.accesstoken=sessionStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
@@ -1361,18 +1401,18 @@ updateServiceForm(){
      }, error => {
        if(error=="Unauthorized"){
        console.log(error);
-       alert(error);
+       this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
     
-  }
-  // var notify = document.getElementById('notifyss');
-  //    notify.style.display = 'block';
-  
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+  }else{
+  this.message='unknown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
    
      
                console.log(error);
-             
+  }     
             });
 }
      }
@@ -1407,34 +1447,37 @@ if (e.status === 422) {
      }, error => {
        if(error=="Unauthorized"){
        console.log(error);
-       alert(error);
+    this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
     
   }
 
   if(error == 'duplicate'){
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);    
-  }
-  // var notify = document.getElementById('notifyss');
-  //    notify.style.display = 'block';
+  this.message='username already present'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+  }else{
   
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
-   
+  
+  this.message='unknown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
      
                console.log(error);
-             
+  }     
             });
 }else{
-    $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+   this.message='parameters not send properly'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
 }
      }
 
 
        updateClientForm(){
  var id = sessionStorage.getItem('tempid');
-     if(this.code != '' && this.areacode !='' && this.name !='' && this.phone !='' && this.address != '' && this.mobile !=''){
+     if(this.code != null && this.areacode !=null && this.name !=null && this.phone !=null && this.address != null && this.mobile !=null){
        let url = API.API_UpdateClient+id;
        console.log(this.selectedvalue);
              let body2 = "clientcode="+this.code+"&areacode="+this.selectedvalue+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.mobile+'&location='+this.location+'&extraroadpoints='+this.extraroadpoints;
@@ -1461,26 +1504,30 @@ if (e.status === 422) {
      }, error => {
        if(error=="Unauthorized"){
        console.log(error);
-       alert(error);
+     this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
     
   }
-  // var notify = document.getElementById('notifyss');
-  //    notify.style.display = 'block';
+  
   if(error == 'duplicate'){
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);     
+  this.message='username already exist'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
   }
   
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+ this.message='unknown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
    
      
                console.log(error);
              
             });
 }else{
-    $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
+   this.message='parameter not send properly'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
 }
 
      }
@@ -1515,29 +1562,31 @@ if (e.status === 422) {
      }, error => {
        if(error=="Unauthorized"){
        console.log(error + "dislaying error");
-       alert(error);
+      this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
     
   }
   if(error=='duplicate'){
    console.log(error);
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
-   window.alert("alreaady added data");    
+ this.message='username already exist'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
   }
   // var notify = document.getElementById('notifyss');
   //    notify.style.display = 'block';
    console.log(error);
-  $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
-   window.alert("alreaady added data");
+  this.message='unknown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
      
               
              
             });
       }else{
-          $("#notifyss1").show();
-  setTimeout(function() { $("#notifyss1").hide(); }, 5000);
-    window.alert("please fill all the fields")  
+       this.message='parameter not send properly'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
     }
      }
 
@@ -1578,22 +1627,23 @@ if(this.cnewpassword == this.newpassword){
  }, error => {
        if(error=="Unauthorized"){
        console.log(error);
-       alert(error);
+     this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
     
   }
-  // var notify = document.getElementById('notifys');
-    //  notify.style.display = 'block';
-  
-  $("#notifyss").show();
-  setTimeout(function() { $("#notifyss").hide(); }, 5000);
+ this.message='unknown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
    
      
                console.log(error);
              
             });
 }else{
-    $("#notifyss").show();
-  setTimeout(function() { $("#notifyss").hide(); }, 5000);
+    this.message='parameters not send properly'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
 }
 }
 
@@ -1603,4 +1653,5 @@ interface marker {
 	lng: number;
 	label?: string;
 	draggable: boolean;
+    isOpen:boolean;
 }

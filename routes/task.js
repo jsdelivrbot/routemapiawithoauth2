@@ -54,11 +54,13 @@ MongoClient.connect(url, function (err, db) {
 router.get('/getservicerequestplan/:id/:id2',function(req,res,next){
     // find everything 
 
+var array = (req.params.id2).split('-');
+var date = array[0]+'/'+array[1]+'/'+array[2]
 
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
-  db.collection('servicerequest').find({$and: [{areacode:req.params.id},{servicedate:req.params.id2}]}).toArray(function (err, result) {
+  db.collection('servicerequest').find({$and: [{areacode:req.params.id},{servicedate:date}]}).toArray(function (err, result) {
     if (err) throw err
 
     res.json(result);
@@ -157,7 +159,7 @@ bcrypt.hash(password, 11, function (err, hash) {
                   
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
-db.collection('users').findOne({username: username}, function (err, user) {
+db.collection('users').findOne({code: code}, function (err, user) {
             if(user) {
                 res.send("Username is already taken", 422)
             }else{
@@ -448,7 +450,7 @@ bcrypt.hash(password, 11, function (err, hash) {
                   
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
-db.collection('users').findOne({username: username}, function (err, user) {
+db.collection('users').findOne({code: code}, function (err, user) {
             if(user) {
                 res.send("Username is already taken", 422)
             }else{
@@ -626,12 +628,12 @@ res.json({
 
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
-db.collection('users').findOne({username: clientname}, function (err, user) {
+db.collection('users').findOne({code: clientcode}, function (err, user) {
             if(user) {
                 res.send("username is already taken", 422)
             }else{
 
-  db.collection('users').save({clientcode: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,extraroadpoints:extraroadpoints,usertype:3} ,function (err, results) {
+  db.collection('users').save({code: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,extraroadpoints:extraroadpoints,usertype:3} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
@@ -684,7 +686,7 @@ res.json({
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
-    db.collection('users').update({_id: ObjectID(req.params.id)},{$set:{clientcode: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,extraroadpoints:extraroadpoints,usertype:3}} ,function (err, results) {
+    db.collection('users').update({_id: ObjectID(req.params.id)},{$set:{code: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,extraroadpoints:extraroadpoints,usertype:3}} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
@@ -706,7 +708,7 @@ router.get('/getclientcodedetails/:id',function(req,res,next){
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
-  db.collection('users').findOne({clientcode:req.params.id} ,function (err, results) {
+  db.collection('users').findOne({code:req.params.id} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
@@ -757,7 +759,7 @@ MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
 
-  db.collection('servicerequest').save({clientcode: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,requesttype:requesttype,bookingdate:bookingdate,servicedate:servicedate} ,function (err, results) {
+  db.collection('servicerequest').save({code: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,requesttype:requesttype,bookingdate:bookingdate,servicedate:servicedate} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
@@ -809,7 +811,7 @@ MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
 
-  db.collection('servicerequest').update({_id: ObjectID(req.params.id)},{$set:{clientcode: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,requesttype:requesttype,bookingdate:bookingdate,servicedate:servicedate}} ,function (err, results) {
+  db.collection('servicerequest').update({_id: ObjectID(req.params.id)},{$set:{code: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,requesttype:requesttype,bookingdate:bookingdate,servicedate:servicedate}} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
