@@ -23,7 +23,7 @@ var CustomerComponent = (function () {
         this.router = router;
         this.http = http;
         // google maps zoom level
-        this.zoom = 8;
+        this.zoom = 1;
         // initial center position for the map
         this.lat = 51.673858;
         this.lng = 7.815982;
@@ -49,6 +49,7 @@ var CustomerComponent = (function () {
                 draggable: true
             }
         ];
+        this.infoWindowOpened = null;
         this.myDatePickerOptions = {
             // other options...
             dateFormat: 'dd/mm/yyyy',
@@ -77,6 +78,43 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.clickedMarker = function (label, index) {
         console.log("clicked the marker: " + (label || index));
         this.locationname = label;
+    };
+    CustomerComponent.prototype.addtask = function (name) {
+        var _this = this;
+        var spli = name.split('-');
+        var id = spli[1];
+        var url = api_config_1.API.API_UpdateServicerequestAssigntrue + id;
+        console.log(this.selectedvalue);
+        var body2 = "";
+        this.accesstoken = sessionStorage.getItem('access_token');
+        var head2 = new http_1.Headers({
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Bearer ' + this.accesstoken
+        });
+        this.http.put(url, { headers: head2 })
+            .map(function (res) { return res.json(); }).catch(function (e) {
+            if (e.status === 401) {
+                return Observable_1.Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        })
+            .subscribe(function (data) {
+            console.log('success');
+            _this.loadservicerequestdetailplan();
+        }, function (error) {
+            if (error == "Unauthorized") {
+                console.log(error);
+                _this.message = 'unauthorized user';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
+            }
+            else {
+                _this.message = 'unknown error';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
+                console.log(error);
+            }
+        });
     };
     CustomerComponent.prototype.plansearch = function () {
         var _this = this;
@@ -108,7 +146,8 @@ var CustomerComponent = (function () {
                     lat: Number(temp_array[0]),
                     lng: Number(temp_array[1]),
                     draggable: false,
-                    label: data[i].clientname + '\n' + data[i]._id
+                    label: data[i].clientname + '-' + data[i]._id,
+                    isOpen: false
                 });
             }
             window.dispatchEvent(new Event("resize"));
@@ -341,6 +380,7 @@ var CustomerComponent = (function () {
         this.selective = 1;
         var serviceplan = document.getElementById('serviceplan');
         this.onNone();
+        this.loadservicerequestdetailplan();
         serviceplan.style.display = "block";
     };
     CustomerComponent.prototype.servicePlanClick = function () {
@@ -684,6 +724,38 @@ var CustomerComponent = (function () {
         // load area code
         console.log('loaddata service request detail');
         var url = api_config_1.API.API_GetServicerequest;
+        this.accesstoken = sessionStorage.getItem('access_token');
+        var head2 = new http_1.Headers({
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Bearer ' + this.accesstoken
+        });
+        this.http.get(url, {
+            headers: head2
+        })
+            .map(function (res) {
+            return res.json();
+        }).catch(function (e) {
+            if (e.status === 401) {
+                return Observable_1.Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(function (data) {
+            console.log(JSON.stringify(data));
+            _this.areacodearray = Array();
+            _this.areacodearray = data;
+            _this.reInitDatatable();
+        }, function (error) {
+            if (error == "Unauthorized") {
+                alert(error);
+                console.log(error);
+            }
+        });
+    };
+    CustomerComponent.prototype.loadservicerequestdetailplan = function () {
+        var _this = this;
+        // load area code
+        console.log('loaddata service request detail');
+        var url = api_config_1.API.API_GetServiceRequestPlandetail;
         this.accesstoken = sessionStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',

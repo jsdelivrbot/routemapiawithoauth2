@@ -232,8 +232,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1</td>
+                  <tr *ngFor="let data of areacodearray;let i = index">
+                    <td>{{data.areacode }}</td>
                     <td>Column content</td>
                     <td>Column content</td>
                     <td>Column content</td>
@@ -267,9 +267,9 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>Column content</td>
+                  <tr *ngFor="let data of areacodearray;let i = index">
+                    
+                    <td>{{data.areacode}}</td>
 
                   </tr>
                 </tbody>
@@ -301,21 +301,28 @@
       [zoom]="zoom"
       [disableDefaultUI]="false"
       [zoomControl]="true"
-      
+      [disableDoubleClickZoom]="true"
+      [fitBounds]="true"
+      [mapTypeControl]="true"
+      [streetViewControl]="true"
+       
       >
     
       <sebm-google-map-marker 
+          #gm
           *ngFor="let m of markers ; let i = index"
-          (markerClick)="clickedMarker(m.label, i)"
+          (markerClick)="clickedMarker(m.label,$event)"
           [latitude]="m.lat"
           [longitude]="m.lng"
           [label]="m.label"
           [markerDraggable]="m.draggable"
-          (dragEnd)="markerDragEnd(m, $event)">
+          (dragEnd)="markerDragEnd(m, $event)"
+          [openInfoWindow]="true"
+          >
           
-        <sebm-google-map-info-window *ngFor="let m of markers ; let i = index" [isOpen]="i.isOpen">
-          <strong>{{this.locationname}}</strong>
-          
+        <sebm-google-map-info-window *ngFor="let m of markers ; let i = index">
+          <strong>{{locationame}}</strong>
+          <a (click)="addtask(locationame)" class="btn btn-info">+</a>
         </sebm-google-map-info-window>
         
       </sebm-google-map-marker>

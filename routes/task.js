@@ -71,6 +71,25 @@ MongoClient.connect(url, function (err, db) {
 });
 
 
+// get service request plan details
+router.get('/getservicerequestplandetails',function(req,res,next){
+    // find everything 
+
+
+
+MongoClient.connect(url, function (err, db) {
+  if (err) throw err
+
+  db.collection('servicerequest').find({assign:true}).toArray(function (err, result) {
+    if (err) throw err
+
+    res.json(result);
+    
+  })
+})
+
+});
+
 // single task
 router.get('/getcustomer/:id',function(req,res,next){
     // find everything 
@@ -759,7 +778,7 @@ MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
 
-  db.collection('servicerequest').save({code: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,requesttype:requesttype,bookingdate:bookingdate,servicedate:servicedate} ,function (err, results) {
+  db.collection('servicerequest').save({code: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,requesttype:requesttype,bookingdate:bookingdate,servicedate:servicedate,assigned:'false'} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
@@ -819,6 +838,52 @@ MongoClient.connect(url, function (err, db) {
   })
             })
 }
+  
+
+});
+
+
+
+// update service request assign true
+router.put('/updateservicerequestassigntrue/:id',function(req,res,next){
+res.setHeader('Content-Type', 'application/json')
+
+
+MongoClient.connect(url, function (err, db) {
+  if (err) throw err
+
+
+  db.collection('servicerequest').update({_id: ObjectID(req.params.id)},{$set:{assign: 'true'}} ,function (err, results) {
+    if (err) throw err
+
+    res.json(results);
+    
+  })
+            })
+
+  
+
+});
+
+// update service request assign false
+router.put('/updateservicerequestassignfalse/:id',function(req,res,next){
+res.setHeader('Content-Type', 'application/json')
+
+
+
+
+MongoClient.connect(url, function (err, db) {
+  if (err) throw err
+
+
+  db.collection('servicerequest').update({_id: ObjectID(req.params.id)},{$set:{assign: 'false'}} ,function (err, results) {
+    if (err) throw err
+
+    res.json(results);
+    
+  })
+            })
+
   
 
 });

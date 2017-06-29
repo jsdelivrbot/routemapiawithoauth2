@@ -11,7 +11,7 @@ import {API} from './../../api_config/api_config';
 import {Base64} from 'js-base64';
 import "jquery";
 import 'datatables.net';
-import {AgmCoreModule} from 'angular2-google-maps/core';
+import {AgmCoreModule,InfoWindowManager} from 'angular2-google-maps/core';
 
 
 
@@ -40,7 +40,7 @@ public dd:any;
 public mm:any;
 public yyyy:any;    
 // google maps zoom level
-  zoom: number = 8;
+  zoom: number = 1;
   
   // initial center position for the map
   lat: number = 51.673858;
@@ -127,18 +127,56 @@ this.planemployee=""
   ]
 
 
+ infoWindowOpened = null;
 
 clickedMarker(label: string, index: number) {
     console.log(`clicked the marker: ${label || index}`)
-     for (let i = 0; i < this.markers.length; i++) {
-            if (i != index) {
-                this.markers[i].isOpen = false;
-            }else
-               this.markers[i].isOpen = true;
-        }
+    
     this.locationname = label;  
 }
   
+
+addtask(name){
+     var spli = name.split('-')
+     var id=spli[1]
+     let url = API.API_UpdateServicerequestAssigntrue+id;
+       console.log(this.selectedvalue);
+             let body2 = "";
+             this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+    
+            this.http.put(url, {headers : head2})
+            .map(res =>  res.json()).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        })
+       .subscribe(data => {
+      console.log('success')
+      this.loadservicerequestdetailplan()
+     }, error => {
+       if(error=="Unauthorized"){
+       console.log(error);
+       this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+    
+  }else{
+  this.message='unknown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+   
+     
+               console.log(error);
+  }     
+            });
+}
+
+
 
 plansearch(){
    console.log('plan search')
@@ -170,7 +208,7 @@ plansearch(){
       lat: Number(temp_array[0]),
       lng: Number(temp_array[1]),
       draggable:false,
-      label:data[i].clientname + '\n' + data[i]._id,
+      label:data[i].clientname + '-' + data[i]._id,
       isOpen:false
     });    
    }
@@ -481,7 +519,7 @@ onServiceplan(){
 this.selective=1
 var serviceplan = document.getElementById('serviceplan');
 this.onNone();
-
+this.loadservicerequestdetailplan();
 serviceplan.style.display="block";
 }
 
@@ -903,6 +941,44 @@ console.log(error);
 });      
 
 }
+
+
+loadservicerequestdetailplan(){
+// load area code
+  console.log('loaddata service request detail');
+let url = API.API_GetServiceRequestPlandetail;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        }).subscribe(data => {
+       console.log(JSON.stringify(data));
+     this.areacodearray = Array();
+       this.areacodearray = data;
+       this.reInitDatatable();
+}, error => {
+if(error=="Unauthorized"){
+alert(error);
+console.log(error);
+}
+});      
+
+}
+
+
+
 
 loadareacode(){
 // load area code

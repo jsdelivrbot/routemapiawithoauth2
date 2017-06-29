@@ -24,6 +24,10 @@ public static API_AddServicerequest = API.API_ENDPOINT + '/api/addservicerequest
 
 public static API_UpdateServicerequest = API.API_ENDPOINT + '/api/updateservicerequest/';
 
+public static API_UpdateServicerequestAssigntrue = API.API_ENDPOINT + '/api/updateservicerequestassigntrue/';
+
+public static API_UpdateServicerequestAssignfalse = API.API_ENDPOINT + '/api/updateservicerequestassignfalse/';
+
 public static API_UpdateCustomer = API.API_ENDPOINT + '/api/updatecustomer/';
 
 public static API_GetCustomer = API.API_ENDPOINT + '/api/getcustomer/';
@@ -35,6 +39,8 @@ public static API_GetAreacode = API.API_ENDPOINT + '/api/getareacode/';
 public static API_GetEmployeePlan = API.API_ENDPOINT + '/api/getemployeeplan/';
 
 public static API_GetServiceRequestPlan = API.API_ENDPOINT + '/api/getservicerequestplan/';
+
+public static API_GetServiceRequestPlandetail = API.API_ENDPOINT + '/api/getservicerequestplandetails/';
 
 public static API_GetClients = API.API_ENDPOINT + '/api/getclients/';
 
