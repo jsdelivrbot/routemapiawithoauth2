@@ -115,6 +115,8 @@ if(sessionStorage.getItem('adminUser')=='admin'){
     
             this.http.post(urlaccess, body2, {headers : head2})
             .map(res =>  res.json())
+            // do any other checking for statuses here
+        
             .subscribe(data => {
               this.access_token =  data.access_token;               
               this.refresh_token = data.refresh_token; 
@@ -124,8 +126,9 @@ if(sessionStorage.getItem('adminUser')=='admin'){
          sessionStorage.setItem('currentUser',this.name)
      this.router.navigate(['/customer']);  
      }, error => {
-               console.log(error);
-            $("#alertag").show();
+               console.log(error + "customer error");
+              
+            $("#alerttag").show();
   setTimeout(function() { $("#alerttag").hide(); }, 5000);
             });
         

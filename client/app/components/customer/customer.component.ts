@@ -11,7 +11,9 @@ import {API} from './../../api_config/api_config';
 import {Base64} from 'js-base64';
 import "jquery";
 import 'datatables.net';
-import {AgmCoreModule,InfoWindowManager} from 'angular2-google-maps/core';
+import {AgmCoreModule,MapsAPILoader} from 'angular2-google-maps/core';
+
+
 
 
 
@@ -34,13 +36,18 @@ import {AgmCoreModule,InfoWindowManager} from 'angular2-google-maps/core';
 
 export class CustomerComponent { 
 
+
+
+
+
+
 public name:any;
 public password:any; 
 public dd:any;
 public mm:any;
 public yyyy:any;    
 // google maps zoom level
-  zoom: number = 1;
+  zoom: number = 8;
   
   // initial center position for the map
   lat: number = 51.673858;
@@ -83,6 +90,9 @@ public clientdetails:any;
     public planareacode:any
     public planemployee:any
     public message:any;
+    public latlngBounds:any;
+    
+
     reinitializeall(){
         this.name="";
   this.password="";
@@ -127,11 +137,30 @@ this.planemployee=""
   ]
 
 
- infoWindowOpened = null;
+
+
+
+constructor(private router: Router,public http:Http,private mapsAPILoader:MapsAPILoader){
+       this.date();  
+               this.mapsAPILoader.load().then(() => {
+              this.latlngBounds = new window['google'].maps.LatLngBounds();
+                
+  
+
+                this.markers.forEach((location) => {
+                    this.latlngBounds.extend(new window['google'].maps.LatLng(location.lat, location.lng))
+  })
+               })
+ }
+
+
+
 
 clickedMarker(label: string, index: number) {
     console.log(`clicked the marker: ${label || index}`)
-    
+    // if (infoWindow) infoWindow.close(); 
+     
+     
     this.locationname = label;  
 }
   
@@ -177,6 +206,45 @@ addtask(name){
 }
 
 
+removetask(name){
+     var spli = name.split('-')
+     var id=spli[1]
+     let url = API.API_UpdateServicerequestAssignfalse+id;
+       console.log(this.selectedvalue);
+             let body2 = "";
+             this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+    
+            this.http.put(url, {headers : head2})
+            .map(res =>  res.json()).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        })
+       .subscribe(data => {
+      console.log('success')
+      this.loadservicerequestdetailplan()
+     }, error => {
+       if(error=="Unauthorized"){
+       console.log(error);
+       this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+    
+  }else{
+  this.message='unknown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+   
+     
+               console.log(error);
+  }     
+            });
+}
 
 plansearch(){
    console.log('plan search')
@@ -203,15 +271,36 @@ plansearch(){
        console.log(data);
        this.markers = Array() 
        for(var i=0;i<data.length;i++){
+    
        var temp_array = (data[i].location).split(',');
-       this.markers.push({
+        if(data[i].assigned == 'true'){ 
+         this.markers.push({
       lat: Number(temp_array[0]),
       lng: Number(temp_array[1]),
       draggable:false,
       label:data[i].clientname + '-' + data[i]._id,
-      isOpen:false
-    });    
+      add:true,
+      remove:false
+      });
+    }else{
+         this.markers.push({
+      lat: Number(temp_array[0]),
+      lng: Number(temp_array[1]),
+      draggable:false,
+      label:data[i].clientname + '-' + data[i]._id,
+      add:false,
+      remove:true
+    })
+}
+                this.mapsAPILoader.load().then(() => {
+              this.latlngBounds = new window['google'].maps.LatLngBounds();
+ 
+                this.markers.forEach((location) => {
+                    this.latlngBounds.extend(new window['google'].maps.LatLng(location.lat, location.lng))
+  })
+               })    
    }
+
    window.dispatchEvent(new Event("resize"));
     console.log(this.markers)
 }, error => {
@@ -267,10 +356,7 @@ mapClicked($event: MouseEvent) {
         public model: Object;
          
 
-constructor(private router: Router,public http:Http){
-       this.date();  
 
-   }
 
 ngOnInit(){
      //called after the constructor and called  after the first ngOnChanges() 
@@ -279,6 +365,9 @@ this.date();
     $("#alerttag").show();
   setTimeout(function() { $("#alerttag").hide(); }, 5000);
 this.loadareacode(); 
+
+
+
   }
 
 ngAfterViewInit() {
@@ -1729,5 +1818,7 @@ interface marker {
 	lng: number;
 	label?: string;
 	draggable: boolean;
-    isOpen:boolean;
+    add:boolean;
+   remove:boolean;
+  
 }

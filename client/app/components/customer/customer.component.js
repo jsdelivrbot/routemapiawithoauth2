@@ -18,12 +18,15 @@ var Observable_1 = require("rxjs/Observable");
 var api_config_1 = require("./../../api_config/api_config");
 require("jquery");
 require("datatables.net");
+var core_2 = require("angular2-google-maps/core");
 var CustomerComponent = (function () {
-    function CustomerComponent(router, http) {
+    function CustomerComponent(router, http, mapsAPILoader) {
+        var _this = this;
         this.router = router;
         this.http = http;
+        this.mapsAPILoader = mapsAPILoader;
         // google maps zoom level
-        this.zoom = 1;
+        this.zoom = 8;
         // initial center position for the map
         this.lat = 51.673858;
         this.lng = 7.815982;
@@ -49,12 +52,17 @@ var CustomerComponent = (function () {
                 draggable: true
             }
         ];
-        this.infoWindowOpened = null;
         this.myDatePickerOptions = {
             // other options...
             dateFormat: 'dd/mm/yyyy',
         };
         this.date();
+        this.mapsAPILoader.load().then(function () {
+            _this.latlngBounds = new window['google'].maps.LatLngBounds();
+            _this.markers.forEach(function (location) {
+                _this.latlngBounds.extend(new window['google'].maps.LatLng(location.lat, location.lng));
+            });
+        });
     }
     CustomerComponent.prototype.reinitializeall = function () {
         this.name = "";
@@ -77,6 +85,7 @@ var CustomerComponent = (function () {
     };
     CustomerComponent.prototype.clickedMarker = function (label, index) {
         console.log("clicked the marker: " + (label || index));
+        // if (infoWindow) infoWindow.close(); 
         this.locationname = label;
     };
     CustomerComponent.prototype.addtask = function (name) {
@@ -84,6 +93,43 @@ var CustomerComponent = (function () {
         var spli = name.split('-');
         var id = spli[1];
         var url = api_config_1.API.API_UpdateServicerequestAssigntrue + id;
+        console.log(this.selectedvalue);
+        var body2 = "";
+        this.accesstoken = sessionStorage.getItem('access_token');
+        var head2 = new http_1.Headers({
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Bearer ' + this.accesstoken
+        });
+        this.http.put(url, { headers: head2 })
+            .map(function (res) { return res.json(); }).catch(function (e) {
+            if (e.status === 401) {
+                return Observable_1.Observable.throw('Unauthorized');
+            }
+            // do any other checking for statuses here
+        })
+            .subscribe(function (data) {
+            console.log('success');
+            _this.loadservicerequestdetailplan();
+        }, function (error) {
+            if (error == "Unauthorized") {
+                console.log(error);
+                _this.message = 'unauthorized user';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
+            }
+            else {
+                _this.message = 'unknown error';
+                $("#popup").show();
+                setTimeout(function () { $("#popup").hide(); }, 5000);
+                console.log(error);
+            }
+        });
+    };
+    CustomerComponent.prototype.removetask = function (name) {
+        var _this = this;
+        var spli = name.split('-');
+        var id = spli[1];
+        var url = api_config_1.API.API_UpdateServicerequestAssignfalse + id;
         console.log(this.selectedvalue);
         var body2 = "";
         this.accesstoken = sessionStorage.getItem('access_token');
@@ -142,12 +188,31 @@ var CustomerComponent = (function () {
             _this.markers = Array();
             for (var i = 0; i < data.length; i++) {
                 var temp_array = (data[i].location).split(',');
-                _this.markers.push({
-                    lat: Number(temp_array[0]),
-                    lng: Number(temp_array[1]),
-                    draggable: false,
-                    label: data[i].clientname + '-' + data[i]._id,
-                    isOpen: false
+                if (data[i].assigned == 'true') {
+                    _this.markers.push({
+                        lat: Number(temp_array[0]),
+                        lng: Number(temp_array[1]),
+                        draggable: false,
+                        label: data[i].clientname + '-' + data[i]._id,
+                        add: true,
+                        remove: false
+                    });
+                }
+                else {
+                    _this.markers.push({
+                        lat: Number(temp_array[0]),
+                        lng: Number(temp_array[1]),
+                        draggable: false,
+                        label: data[i].clientname + '-' + data[i]._id,
+                        add: false,
+                        remove: true
+                    });
+                }
+                _this.mapsAPILoader.load().then(function () {
+                    _this.latlngBounds = new window['google'].maps.LatLngBounds();
+                    _this.markers.forEach(function (location) {
+                        _this.latlngBounds.extend(new window['google'].maps.LatLng(location.lat, location.lng));
+                    });
                 });
             }
             window.dispatchEvent(new Event("resize"));
@@ -1454,7 +1519,7 @@ CustomerComponent = __decorate([
         templateUrl: './customer.component.html',
         styles: ["\n    .sebm-google-map-container {\n       height: 70%;\n       width:60%;\n     },\n     \"styles.css\",\n   \"../node_modules/bootstrap/dist/css/bootstrap.min.css\",\n   \"../node_modules/bootstrap/dist/css/bootstrap-theme.min.css\",\n   \"../node_modules/datatables.net-bs/css/dataTables.bootstrap.css\",\n   \"../node_modules/datatables.net-select-bs/css/select.bootstrap.css\"\n  "]
     }),
-    __metadata("design:paramtypes", [router_1.Router, http_1.Http])
+    __metadata("design:paramtypes", [router_1.Router, http_1.Http, core_2.MapsAPILoader])
 ], CustomerComponent);
 exports.CustomerComponent = CustomerComponent;
 //# sourceMappingURL=customer.component.js.map

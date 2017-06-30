@@ -18,19 +18,25 @@
                 <strong>Well done!</strong> You have successfully Logged in as customer 
 </div>
 
+<!--main div-->
+<div style="width: 100%">
 
-<div>
+<div class="col-lg-3 col-md-3 col-sm-4" style="max-width: 20%">
+           
 
-<div class="col-lg-3 col-md-3 col-sm-4" style="max-width: 17%">
-            <div class="list-group table-of-contents">
-               <a class="list-group-item" (click)="onAreacode()">Areacode</a>
-              <a class="list-group-item" (click)="onEmployee()">Employees</a>
-              <a class="list-group-item" (click)="onClient()">Clients</a>
-              <a class="list-group-item" (click)="onServicereq()">Service Request</a>
-              <a class="list-group-item" (click)="onServiceplan()">Service Plan</a>
-              <a class="list-group-item" (click)="changepassword()">change password</a>
-              <a class="list-group-item" (click)="logout()">Logout</a>
-            </div>
+
+<ul class="nav nav-pills nav-stacked" style="margin-top:20px">
+  <li><a class="list-group-item" (click)="onAreacode()">Areacode</a></li>
+  <li> <a class="list-group-item" (click)="onEmployee()">Employees</a></li>
+  <li>  <a class="list-group-item" (click)="onClient()">Clients</a></li>
+  <li>  <a class="list-group-item" (click)="onServicereq()">Service Request</a></li>
+  <li>  <a class="list-group-item" (click)="onServiceplan()">Service Plan</a></li>
+  <li> <a class="list-group-item" (click)="changepassword()">change password</a></li>
+   <li> <a class="list-group-item" (click)="logout()">Logout</a></li>
+  
+</ul>
+
+
 </div>
 
 
@@ -295,18 +301,18 @@
 </div>
 </div>
 <div style="width:70%;float:right;padding-left: 60px" >
-<sebm-google-map 
+<sebm-google-map
+#agm 
       [latitude]="lat"
       [longitude]="lng"
       [zoom]="zoom"
       [disableDefaultUI]="false"
       [zoomControl]="true"
       [disableDoubleClickZoom]="true"
-      [fitBounds]="true"
+      [fitBounds]="latlngBounds"
       [mapTypeControl]="true"
       [streetViewControl]="true"
-       
-      >
+       >
     
       <sebm-google-map-marker 
           #gm
@@ -320,9 +326,10 @@
           [openInfoWindow]="true"
           >
           
-        <sebm-google-map-info-window *ngFor="let m of markers ; let i = index">
-          <strong>{{locationame}}</strong>
-          <a (click)="addtask(locationame)" class="btn btn-info">+</a>
+        <sebm-google-map-info-window [latitude]="lat" [longitude]="lng" [disableAutoPan]="true">
+          <strong>{{m.label}}</strong>
+          <a *ngIf="m.add" (click)="addtask(locationame)" class="btn btn-info">+</a>
+          <a  *ngIf="m.remove" (click)="removetask(locationame)" class="btn btn-info">-</a>
         </sebm-google-map-info-window>
         
       </sebm-google-map-marker>
@@ -339,7 +346,7 @@
 
 </div>
  </div>
-
+</div>
 
 
 <!--add area code-->
@@ -1062,4 +1069,5 @@
      
 </div>
 
+</div>
 </div>

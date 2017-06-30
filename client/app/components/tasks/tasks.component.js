@@ -94,8 +94,8 @@ var TasksComponent = (function () {
                 sessionStorage.setItem('currentUser', _this.name);
                 _this.router.navigate(['/customer']);
             }, function (error) {
-                console.log(error);
-                $("#alertag").show();
+                console.log(error + "customer error");
+                $("#alerttag").show();
                 setTimeout(function () { $("#alerttag").hide(); }, 5000);
             });
         }

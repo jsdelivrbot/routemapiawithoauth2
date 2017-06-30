@@ -776,13 +776,16 @@ res.json({
 
 MongoClient.connect(url, function (err, db) {
   if (err) throw err
+   
+   db.collection('users').find({areacode:areacode}).toArray(function (err, result) {
+    if (err) throw err
 
-
-  db.collection('servicerequest').save({code: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,requesttype:requesttype,bookingdate:bookingdate,servicedate:servicedate,assigned:'false'} ,function (err, results) {
+  db.collection('servicerequest').save({code: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,requesttype:requesttype,bookingdate:bookingdate,servicedate:servicedate,assigned:'true',assignedto:result.code,assignedname:result.username} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
     
+  })
   })
             })
 }
@@ -853,7 +856,7 @@ MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
 
-  db.collection('servicerequest').update({_id: ObjectID(req.params.id)},{$set:{assign: 'true'}} ,function (err, results) {
+  db.collection('servicerequest').update({_id: ObjectID(req.params.id)},{$set:{assigned: 'true'}} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
@@ -876,7 +879,7 @@ MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
 
-  db.collection('servicerequest').update({_id: ObjectID(req.params.id)},{$set:{assign: 'false'}} ,function (err, results) {
+  db.collection('servicerequest').update({_id: ObjectID(req.params.id)},{$set:{assigned: 'false'}} ,function (err, results) {
     if (err) throw err
 
     res.json(results);
