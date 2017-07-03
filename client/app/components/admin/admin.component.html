@@ -1,18 +1,36 @@
-<div style="background-color: slategray">
-<!--main-->
-<div>
+<!--header-->
+<div class="container" style="width:100%">
+<div class="row" >
+<div class="col-xs-12" style="background-color: steelblue;width:100%;height:auto;">
+<h1 style="position: relative;text-align:center;color: whitesmoke; font-family: 'Times New Roman', Times, serif">Routemapia : Admin Logged</h1>
+    </div>
 
-  <h1 style="font-size: 50px;margin: 0px 390px 0px 450px;color: whitesmoke; font-family: 'Times New Roman', Times, serif">Admin Logged</h1>
-<hr/>
 </div>
 </div>
-<div class="alert alert-dismissible alert-success" id="alerttag">
+
+<!--notification bar-->
+<div class="container" style="width: 100%">
+<div class="row" style="width: 100%">
+    <div class="col-xs-12" id="alerttag" style="width: 100%;display:none">
+            <div class="bs-component">
+            <div class="alert alert-dismissible alert-success" id="alerttag">
                 <button type="button" class="close" data-dismiss="alert" (click)="dismiss()">×</button>
                 <strong>Well done!</strong> You have successfully Logged in 
 </div>
+            </div>
+          </div>
+        
+</div>
+    </div >
 
 
-<div class="col-lg-3 col-md-3 col-sm-4" style="width: 30%">
+
+<!--div base-->
+<div class="container" style="width:100%">
+  <div class="row">
+<!--nav pills-->
+    <div class=col-xs-3>
+
          
 
             <ul class="nav nav-pills nav-stacked" style="margin-top:20px">
@@ -23,7 +41,9 @@
 </ul>
 </div>
 
-<div class="col-lg-12" style="float: left;width: 70%" id="adminmain">
+<!--nav contents-->
+
+<div class="col-xs-9" id="adminmain">
             <div class="page-header">
               <h1 id="tables" >Customer List <a (click)="addcustomer()" class="btn btn-primary" style="float: right;">+</a></h1>
             </div>
@@ -278,9 +298,10 @@
               </div>  
               </form>
      
-</div>
-</div>
 
+</div>
+</div>
+  </div>
 
 
 

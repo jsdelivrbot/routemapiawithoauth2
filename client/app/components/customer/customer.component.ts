@@ -40,12 +40,13 @@ export class CustomerComponent {
 
 
 
-
+public planroutename:any;
 public name:any;
 public password:any; 
 public dd:any;
 public mm:any;
 public yyyy:any;    
+public updatedplanexecutedarray:any;
 // google maps zoom level
   zoom: number = 8;
   
@@ -116,24 +117,24 @@ this.planemployee=""
     public markers2:any;
   
   markers: marker[] = [
-	  {
-		  lat: 51.673858,
-		  lng: 7.815982,
-		  label: 'source',
-		  draggable: true
-	  },
-	  {
-		  lat: 51.373858,
-		  lng: 7.215982,
-		  label: 'centre',
-		  draggable: false
-	  },
-	  {
-		  lat: 51.723858,
-		  lng: 7.895982,
-		  label: 'destination',
-		  draggable: true
-	  }
+	//   {
+	// 	  lat: 51.673858,
+	// 	  lng: 7.815982,
+	// 	  label: 'source',
+	// 	  draggable: true
+	//   },
+	//   {
+	// 	  lat: 51.373858,
+	// 	  lng: 7.215982,
+	// 	  label: 'centre',
+	// 	  draggable: false
+	//   },
+	//   {
+	// 	  lat: 51.723858,
+	// 	  lng: 7.895982,
+	// 	  label: 'destination',
+	// 	  draggable: true
+	//   }
   ]
 
 
@@ -177,7 +178,7 @@ addtask(name){
              'Authorization':'Bearer '+ this.accesstoken
     });
     
-            this.http.put(url, {headers : head2})
+            this.http.put(url,body2, {headers : head2})
             .map(res =>  res.json()).catch(e => {
             if (e.status === 401) {
                 return Observable.throw('Unauthorized');
@@ -186,7 +187,7 @@ addtask(name){
         })
        .subscribe(data => {
       console.log('success')
-      this.loadservicerequestdetailplan()
+      this.plansearch()
      }, error => {
        if(error=="Unauthorized"){
        console.log(error);
@@ -218,7 +219,7 @@ removetask(name){
              'Authorization':'Bearer '+ this.accesstoken
     });
     
-            this.http.put(url, {headers : head2})
+            this.http.put(url,body2, {headers : head2})
             .map(res =>  res.json()).catch(e => {
             if (e.status === 401) {
                 return Observable.throw('Unauthorized');
@@ -227,7 +228,7 @@ removetask(name){
         })
        .subscribe(data => {
       console.log('success')
-      this.loadservicerequestdetailplan()
+      this.plansearch()
      }, error => {
        if(error=="Unauthorized"){
        console.log(error);
@@ -268,12 +269,14 @@ plansearch(){
             }
             // do any other checking for statuses here
         }).subscribe(data => {
-       console.log(data);
+       console.log(JSON.stringify(data));
        this.markers = Array() 
+       this.updatedplanexecutedarray = Array()
        for(var i=0;i<data.length;i++){
     
        var temp_array = (data[i].location).split(',');
-        if(data[i].assigned == 'true'){ 
+        
+        if(data[i].assigned == 'false'){ 
          this.markers.push({
       lat: Number(temp_array[0]),
       lng: Number(temp_array[1]),
@@ -283,6 +286,13 @@ plansearch(){
       remove:false
       });
     }else{
+
+        // this.updatedplanexecutedarray.push({
+              
+
+
+        // })
+        
          this.markers.push({
       lat: Number(temp_array[0]),
       lng: Number(temp_array[1]),
@@ -459,6 +469,64 @@ this.bookingdate= { date: { year: this.yyyy, month: this.mm, day: this.dd } };
 
 requestcode(){
 this.loadclientcodedetail();
+}
+
+
+planroutesubmit(){
+     var dates2 =this.model.date.day+'-'+this.model.date.month+'-'+this.model.date.year;
+    if(this.planroutename != null){
+       let url = API.API_AddPlanexecuted;
+             let body2 = "planroutename="+this.planroutename+"&date="+dates2+"&areacode="+this.planareacode;
+             this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+    
+            this.http.post(url, body2, {headers : head2})
+            .map(res =>  res.json()).catch(e => {
+            if (e.status === 401) {
+                return Observable.throw('Unauthorized');
+            }
+
+            if(e.status === 422){
+                return Observable.throw('duplicate')
+            }
+            // do any other checking for statuses here
+        })
+       .subscribe(data => {
+      this.onServiceplan();            
+        this.router.navigate(['/customer']);   
+     }, error => {
+       if(error=="Unauthorized"){
+       console.log(error);
+       this.message='unauthorized user'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+  }
+
+if(error == 'duplicate'){
+    this.message='username already exist'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+   
+     
+               console.log(error+'reached duplicate');
+}else{
+    this.message='unknown error'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+}
+     
+               console.log(error);
+             
+            });
+      }else{
+          this.message='parameters not send properly'
+     $("#popup").show();
+        setTimeout(function() { $("#popup").hide(); }, 5000);
+      }
+
 }
 
 onNone(){

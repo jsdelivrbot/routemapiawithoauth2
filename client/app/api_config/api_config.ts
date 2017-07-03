@@ -10,6 +10,8 @@ public static API_AddCustomer = API.API_ENDPOINT + '/api/addcustomer';
 
 public static API_AddAreacode = API.API_ENDPOINT + '/api/addareacode';
 
+public static API_AddPlanexecuted = API.API_ENDPOINT + '/api/addplanexecuted';
+
 public static API_UpdateAreacode = API.API_ENDPOINT + '/api/updateareacode/';
 
 public static API_AddEmployee = API.API_ENDPOINT + '/api/addemployee';

@@ -197,6 +197,56 @@ db.collection('users').findOne({code: code}, function (err, user) {
 
 });
 
+
+// save service executed
+router.post('/addplanexecuted',function(req,res,next){
+res.setHeader('Content-Type', 'application/json')
+var task = req.body;
+var planroutename = req.body['planroutename'];
+var date = req.body['date'];
+var areacode = req.body['areacode'];
+
+ 
+
+
+if((!task.planroutename) || (!task.date)||(!task.areacode))
+{
+
+res.status(400)
+res.json({
+    "error":"bad data"}
+
+
+)
+}else{
+
+
+MongoClient.connect(url, function (err, db) {
+  if (err) throw err
+
+      
+db.collection('servicerequest').find({assigned:true}).toArray(function (err, result) {
+    if (err) throw err
+
+    res.json(result);
+    
+  })
+  
+  
+  db.collection('serviceexecuted').save({planroutename: planroutename, date: date,areacode:areacode } ,function (err, results) {
+    if (err) throw err
+
+    res.json(results);
+    
+  })
+      
+
+  })
+
+ }
+
+});
+
 // delete task
 router.delete('/removecustomer/:id',function(req,res,next){
     // find everything 
@@ -780,7 +830,7 @@ MongoClient.connect(url, function (err, db) {
    db.collection('users').find({areacode:areacode}).toArray(function (err, result) {
     if (err) throw err
 
-  db.collection('servicerequest').save({code: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,requesttype:requesttype,bookingdate:bookingdate,servicedate:servicedate,assigned:'true',assignedto:result.code,assignedname:result.username} ,function (err, results) {
+  db.collection('servicerequest').save({code: clientcode, areacode: areacode , location : location,clientname:clientname,address:address,phone:phone,mobile:mobile,requesttype:requesttype,bookingdate:bookingdate,servicedate:servicedate,assigned:'true',assignedto:result[0].code,assignedname:result[0].username} ,function (err, results) {
     if (err) throw err
 
     res.json(results);

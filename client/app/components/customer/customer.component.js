@@ -32,26 +32,7 @@ var CustomerComponent = (function () {
         this.lng = 7.815982;
         this.lat1 = 51.673858;
         this.lng1 = 7.815982;
-        this.markers = [
-            {
-                lat: 51.673858,
-                lng: 7.815982,
-                label: 'source',
-                draggable: true
-            },
-            {
-                lat: 51.373858,
-                lng: 7.215982,
-                label: 'centre',
-                draggable: false
-            },
-            {
-                lat: 51.723858,
-                lng: 7.895982,
-                label: 'destination',
-                draggable: true
-            }
-        ];
+        this.markers = [];
         this.myDatePickerOptions = {
             // other options...
             dateFormat: 'dd/mm/yyyy',
@@ -100,7 +81,7 @@ var CustomerComponent = (function () {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
         });
-        this.http.put(url, { headers: head2 })
+        this.http.put(url, body2, { headers: head2 })
             .map(function (res) { return res.json(); }).catch(function (e) {
             if (e.status === 401) {
                 return Observable_1.Observable.throw('Unauthorized');
@@ -109,7 +90,7 @@ var CustomerComponent = (function () {
         })
             .subscribe(function (data) {
             console.log('success');
-            _this.loadservicerequestdetailplan();
+            _this.plansearch();
         }, function (error) {
             if (error == "Unauthorized") {
                 console.log(error);
@@ -137,7 +118,7 @@ var CustomerComponent = (function () {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
         });
-        this.http.put(url, { headers: head2 })
+        this.http.put(url, body2, { headers: head2 })
             .map(function (res) { return res.json(); }).catch(function (e) {
             if (e.status === 401) {
                 return Observable_1.Observable.throw('Unauthorized');
@@ -146,7 +127,7 @@ var CustomerComponent = (function () {
         })
             .subscribe(function (data) {
             console.log('success');
-            _this.loadservicerequestdetailplan();
+            _this.plansearch();
         }, function (error) {
             if (error == "Unauthorized") {
                 console.log(error);
@@ -184,11 +165,11 @@ var CustomerComponent = (function () {
             }
             // do any other checking for statuses here
         }).subscribe(function (data) {
-            console.log(data);
+            console.log(JSON.stringify(data));
             _this.markers = Array();
             for (var i = 0; i < data.length; i++) {
                 var temp_array = (data[i].location).split(',');
-                if (data[i].assigned == 'true') {
+                if (data[i].assigned == 'false') {
                     _this.markers.push({
                         lat: Number(temp_array[0]),
                         lng: Number(temp_array[1]),
