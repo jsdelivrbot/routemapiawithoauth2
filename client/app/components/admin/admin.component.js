@@ -358,22 +358,22 @@ var AdminComponent = (function () {
         var changepassword = document.getElementById('changepassword');
         changepassword.style.display = 'block';
     };
+    AdminComponent = __decorate([
+        core_1.Component({
+            moduleId: module.id,
+            selector: 'admin',
+            templateUrl: './admin.component.html',
+            styles: [
+                "styles.css",
+                "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+                "../node_modules/bootstrap/dist/css/bootstrap-theme.min.css",
+                "../node_modules/datatables.net-bs/css/dataTables.bootstrap.css",
+                "../node_modules/datatables.net-select-bs/css/select.bootstrap.css"
+            ]
+        }),
+        __metadata("design:paramtypes", [router_1.Router, http_1.Http])
+    ], AdminComponent);
     return AdminComponent;
 }());
-AdminComponent = __decorate([
-    core_1.Component({
-        moduleId: module.id,
-        selector: 'admin',
-        templateUrl: './admin.component.html',
-        styles: [
-            "styles.css",
-            "../node_modules/bootstrap/dist/css/bootstrap.min.css",
-            "../node_modules/bootstrap/dist/css/bootstrap-theme.min.css",
-            "../node_modules/datatables.net-bs/css/dataTables.bootstrap.css",
-            "../node_modules/datatables.net-select-bs/css/select.bootstrap.css"
-        ]
-    }),
-    __metadata("design:paramtypes", [router_1.Router, http_1.Http])
-], AdminComponent);
 exports.AdminComponent = AdminComponent;
 //# sourceMappingURL=admin.component.js.map

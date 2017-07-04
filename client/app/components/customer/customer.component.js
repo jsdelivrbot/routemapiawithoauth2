@@ -167,6 +167,7 @@ var CustomerComponent = (function () {
         }).subscribe(function (data) {
             console.log(JSON.stringify(data));
             _this.markers = Array();
+            _this.updatedplanexecutedarray = Array();
             for (var i = 0; i < data.length; i++) {
                 var temp_array = (data[i].location).split(',');
                 if (data[i].assigned == 'false') {
@@ -180,6 +181,8 @@ var CustomerComponent = (function () {
                     });
                 }
                 else {
+                    // this.updatedplanexecutedarray.push({
+                    // })
                     _this.markers.push({
                         lat: Number(temp_array[0]),
                         lng: Number(temp_array[1]),
@@ -310,6 +313,57 @@ var CustomerComponent = (function () {
     };
     CustomerComponent.prototype.requestcode = function () {
         this.loadclientcodedetail();
+    };
+    CustomerComponent.prototype.planroutesubmit = function () {
+        var _this = this;
+        var dates2 = this.model.date.day + '-' + this.model.date.month + '-' + this.model.date.year;
+        if (this.planroutename != null) {
+            var url = api_config_1.API.API_AddPlanexecuted;
+            var body2 = "planroutename=" + this.planroutename + "&date=" + dates2 + "&areacode=" + this.planareacode;
+            this.accesstoken = sessionStorage.getItem('access_token');
+            var head2 = new http_1.Headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Bearer ' + this.accesstoken
+            });
+            this.http.post(url, body2, { headers: head2 })
+                .map(function (res) { return res.json(); }).catch(function (e) {
+                if (e.status === 401) {
+                    return Observable_1.Observable.throw('Unauthorized');
+                }
+                if (e.status === 422) {
+                    return Observable_1.Observable.throw('duplicate');
+                }
+                // do any other checking for statuses here
+            })
+                .subscribe(function (data) {
+                _this.onServiceplan();
+                _this.router.navigate(['/customer']);
+            }, function (error) {
+                if (error == "Unauthorized") {
+                    console.log(error);
+                    _this.message = 'unauthorized user';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
+                }
+                if (error == 'duplicate') {
+                    _this.message = 'username already exist';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
+                    console.log(error + 'reached duplicate');
+                }
+                else {
+                    _this.message = 'unknown error';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
+                }
+                console.log(error);
+            });
+        }
+        else {
+            this.message = 'parameters not send properly';
+            $("#popup").show();
+            setTimeout(function () { $("#popup").hide(); }, 5000);
+        }
     };
     CustomerComponent.prototype.onNone = function () {
         var client = document.getElementById('client');
@@ -1491,16 +1545,16 @@ var CustomerComponent = (function () {
             setTimeout(function () { $("#popup").hide(); }, 5000);
         }
     };
+    CustomerComponent = __decorate([
+        core_1.Component({
+            moduleId: module.id,
+            selector: 'tasks',
+            templateUrl: './customer.component.html',
+            styles: ["\n    .sebm-google-map-container {\n       height: 70%;\n       width:60%;\n     },\n     \"styles.css\",\n   \"../node_modules/bootstrap/dist/css/bootstrap.min.css\",\n   \"../node_modules/bootstrap/dist/css/bootstrap-theme.min.css\",\n   \"../node_modules/datatables.net-bs/css/dataTables.bootstrap.css\",\n   \"../node_modules/datatables.net-select-bs/css/select.bootstrap.css\"\n  "]
+        }),
+        __metadata("design:paramtypes", [router_1.Router, http_1.Http, core_2.MapsAPILoader])
+    ], CustomerComponent);
     return CustomerComponent;
 }());
-CustomerComponent = __decorate([
-    core_1.Component({
-        moduleId: module.id,
-        selector: 'tasks',
-        templateUrl: './customer.component.html',
-        styles: ["\n    .sebm-google-map-container {\n       height: 70%;\n       width:60%;\n     },\n     \"styles.css\",\n   \"../node_modules/bootstrap/dist/css/bootstrap.min.css\",\n   \"../node_modules/bootstrap/dist/css/bootstrap-theme.min.css\",\n   \"../node_modules/datatables.net-bs/css/dataTables.bootstrap.css\",\n   \"../node_modules/datatables.net-select-bs/css/select.bootstrap.css\"\n  "]
-    }),
-    __metadata("design:paramtypes", [router_1.Router, http_1.Http, core_2.MapsAPILoader])
-], CustomerComponent);
 exports.CustomerComponent = CustomerComponent;
 //# sourceMappingURL=customer.component.js.map

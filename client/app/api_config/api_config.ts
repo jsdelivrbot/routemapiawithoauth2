@@ -1,6 +1,6 @@
 export class API{
 
-public static API_ENDPOINT =  "http://localhost:4000";
+public static API_ENDPOINT =  "http://vqtest.southeastasia.cloudapp.azure.com:4000";
 
 public static API_REGISTER = API.API_ENDPOINT + "/users";
 

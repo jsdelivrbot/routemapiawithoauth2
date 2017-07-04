@@ -104,15 +104,15 @@ var TasksComponent = (function () {
         var notify = document.getElementById('alerttag');
         notify.style.display = 'none';
     };
+    TasksComponent = __decorate([
+        core_1.Component({
+            moduleId: module.id,
+            selector: 'login',
+            templateUrl: './tasks.component.html',
+        }),
+        __metadata("design:paramtypes", [router_1.Router, http_1.Http])
+    ], TasksComponent);
     return TasksComponent;
 }());
-TasksComponent = __decorate([
-    core_1.Component({
-        moduleId: module.id,
-        selector: 'login',
-        templateUrl: './tasks.component.html',
-    }),
-    __metadata("design:paramtypes", [router_1.Router, http_1.Http])
-], TasksComponent);
 exports.TasksComponent = TasksComponent;
 //# sourceMappingURL=tasks.component.js.map

@@ -26,11 +26,11 @@ var CanActivateViaAuthGuardAdmin = (function () {
         this.router.navigate(['/login']);
         return false;
     };
+    CanActivateViaAuthGuardAdmin = __decorate([
+        core_1.Injectable(),
+        __metadata("design:paramtypes", [auth_service_1.AuthService, router_1.Router])
+    ], CanActivateViaAuthGuardAdmin);
     return CanActivateViaAuthGuardAdmin;
 }());
-CanActivateViaAuthGuardAdmin = __decorate([
-    core_1.Injectable(),
-    __metadata("design:paramtypes", [auth_service_1.AuthService, router_1.Router])
-], CanActivateViaAuthGuardAdmin);
 exports.CanActivateViaAuthGuardAdmin = CanActivateViaAuthGuardAdmin;
 //# sourceMappingURL=auth.guard.admin.js.map
