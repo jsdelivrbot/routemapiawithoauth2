@@ -90,6 +90,29 @@ MongoClient.connect(url, function (err, db) {
 
 });
 
+
+
+// get service request plan execeuted details
+router.get('/getservicerequestplanexecuteddetails/:id',function(req,res,next){
+    // find everything 
+
+var date = req.params.id;
+
+var datenew = date.split("-");
+
+MongoClient.connect(url, function (err, db) {
+  if (err) throw err
+
+  db.collection('serviceexecuted').find({date:datenew[0]+'/'+datenew[1]+'/'+datenew[2]}).toArray(function (err, result) {
+    if (err) throw err
+
+    res.json(result);
+    
+  })
+})
+});
+
+
 // single task
 router.get('/getcustomer/:id',function(req,res,next){
     // find everything 
@@ -225,23 +248,19 @@ MongoClient.connect(url, function (err, db) {
   if (err) throw err
 
       
-db.collection('servicerequest').find({assigned:true}).toArray(function (err, result) {
+db.collection('servicerequest').find({$and:[{assigned:'true'},{servicedate:date},{areacode:areacode}]}).toArray(function (err, result) {
     if (err) throw err
 
-    res.json(result);
-    
-  })
-  
-  
-  db.collection('serviceexecuted').save({planroutename: planroutename, date: date,areacode:areacode } ,function (err, results) {
+  db.collection('serviceexecuted').save({planroutename: planroutename, date: date,areacode:areacode,serviceinformation:result } ,function (err, results) {
     if (err) throw err
 
     res.json(results);
     
   })
-      
-
+    
   })
+  
+})
 
  }
 

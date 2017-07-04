@@ -11,7 +11,7 @@ import {API} from './../../api_config/api_config';
 import {Base64} from 'js-base64';
 import "jquery";
 import 'datatables.net';
-import {AgmCoreModule,MapsAPILoader} from 'angular2-google-maps/core';
+import {AgmCoreModule,MapsAPILoader,MapTypeStyle} from 'angular2-google-maps/core';
 
 
 
@@ -47,6 +47,9 @@ public dd:any;
 public mm:any;
 public yyyy:any;    
 public updatedplanexecutedarray:any;
+public assigned:any;
+public count:any;
+public polypath:any;
 // google maps zoom level
   zoom: number = 8;
   
@@ -271,6 +274,7 @@ plansearch(){
         }).subscribe(data => {
        console.log(JSON.stringify(data));
        this.markers = Array() 
+       this.polypath = Array()
        this.updatedplanexecutedarray = Array()
        for(var i=0;i<data.length;i++){
     
@@ -286,12 +290,9 @@ plansearch(){
       remove:false
       });
     }else{
-
-        // this.updatedplanexecutedarray.push({
-              
-
-
-        // })
+       
+     this.polypath.push({ lat: Number(temp_array[0]),
+      lng: Number(temp_array[1])});
         
          this.markers.push({
       lat: Number(temp_array[0]),
@@ -473,8 +474,8 @@ this.loadclientcodedetail();
 
 
 planroutesubmit(){
-     var dates2 =this.model.date.day+'-'+this.model.date.month+'-'+this.model.date.year;
-    if(this.planroutename != null){
+     var dates2 =this.model.date.day+'/'+this.model.date.month+'/'+this.model.date.year;
+    if(this.planroutename != null && this.planareacode!= null){
        let url = API.API_AddPlanexecuted;
              let body2 = "planroutename="+this.planroutename+"&date="+dates2+"&areacode="+this.planareacode;
              this.accesstoken=sessionStorage.getItem('access_token')
@@ -674,9 +675,13 @@ this.loadservicerequestdetail();
 
 onServiceplan(){
 this.selective=1
+this.planareacode=""
+this.planemployee=""
+
+this.markers=Array()
+ this.planroutename=""
 var serviceplan = document.getElementById('serviceplan');
 this.onNone();
-this.loadservicerequestdetailplan();
 serviceplan.style.display="block";
 }
 
@@ -685,6 +690,7 @@ servicePlanClick(){
 this.selective=2
 var servicelist = document.getElementById('servicelist');
 this.onNone();
+this.loadservicerequestplanexecuteddetail();
 servicelist.style.display="block";
 }
 
@@ -1135,6 +1141,45 @@ console.log(error);
 }
 
 
+loadservicerequestplanexecuteddetail(){
+// load area code
+  console.log('loaddata service request plan executed detail');
+  var dates2 =this.model.date.day+'-'+this.model.date.month+'-'+this.model.date.year;
+let url = API.API_GetServiceRequestPlanexecuteddetail +dates2;
+    this.accesstoken=sessionStorage.getItem('access_token')
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Bearer '+ this.accesstoken
+    });
+
+  this.http.get(url,{
+      headers: head2
+    })
+    .map(res =>  {
+            return res.json();
+}).subscribe(data => {
+       console.log(data);
+     this.areacodearray = Array();
+    
+       this.areacodearray=data;
+//      this.assigned
+//    this.assigned = data.serviceinformation[0].assignedto;
+//    this.count= data.serviceinformation[0].length;
+
+
+      
+
+
+       console.log(this.areacodearray);
+       this.reInitDatatable();
+       console.log("data updated")
+}, error => {
+
+    console.log("errors"+error);
+
+});      
+
+}
 
 
 loadareacode(){

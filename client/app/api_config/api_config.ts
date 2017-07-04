@@ -44,6 +44,8 @@ public static API_GetServiceRequestPlan = API.API_ENDPOINT + '/api/getservicereq
 
 public static API_GetServiceRequestPlandetail = API.API_ENDPOINT + '/api/getservicerequestplandetails/';
 
+public static API_GetServiceRequestPlanexecuteddetail = API.API_ENDPOINT + '/api/getservicerequestplanexecuteddetails/';
+
 public static API_GetClients = API.API_ENDPOINT + '/api/getclients/';
 
 public static API_GetServicerequest = API.API_ENDPOINT + '/api/getservicerequest/';

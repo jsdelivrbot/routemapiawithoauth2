@@ -167,6 +167,8 @@ var CustomerComponent = (function () {
         }).subscribe(function (data) {
             console.log(JSON.stringify(data));
             _this.markers = Array();
+            _this.polypath = Array();
+            _this.updatedplanexecutedarray = Array();
             for (var i = 0; i < data.length; i++) {
                 var temp_array = (data[i].location).split(',');
                 if (data[i].assigned == 'false') {
@@ -180,6 +182,8 @@ var CustomerComponent = (function () {
                     });
                 }
                 else {
+                    _this.polypath.push({ lat: Number(temp_array[0]),
+                        lng: Number(temp_array[1]) });
                     _this.markers.push({
                         lat: Number(temp_array[0]),
                         lng: Number(temp_array[1]),
@@ -311,6 +315,57 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.requestcode = function () {
         this.loadclientcodedetail();
     };
+    CustomerComponent.prototype.planroutesubmit = function () {
+        var _this = this;
+        var dates2 = this.model.date.day + '/' + this.model.date.month + '/' + this.model.date.year;
+        if (this.planroutename != null && this.planareacode != null) {
+            var url = api_config_1.API.API_AddPlanexecuted;
+            var body2 = "planroutename=" + this.planroutename + "&date=" + dates2 + "&areacode=" + this.planareacode;
+            this.accesstoken = sessionStorage.getItem('access_token');
+            var head2 = new http_1.Headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Bearer ' + this.accesstoken
+            });
+            this.http.post(url, body2, { headers: head2 })
+                .map(function (res) { return res.json(); }).catch(function (e) {
+                if (e.status === 401) {
+                    return Observable_1.Observable.throw('Unauthorized');
+                }
+                if (e.status === 422) {
+                    return Observable_1.Observable.throw('duplicate');
+                }
+                // do any other checking for statuses here
+            })
+                .subscribe(function (data) {
+                _this.onServiceplan();
+                _this.router.navigate(['/customer']);
+            }, function (error) {
+                if (error == "Unauthorized") {
+                    console.log(error);
+                    _this.message = 'unauthorized user';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
+                }
+                if (error == 'duplicate') {
+                    _this.message = 'username already exist';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
+                    console.log(error + 'reached duplicate');
+                }
+                else {
+                    _this.message = 'unknown error';
+                    $("#popup").show();
+                    setTimeout(function () { $("#popup").hide(); }, 5000);
+                }
+                console.log(error);
+            });
+        }
+        else {
+            this.message = 'parameters not send properly';
+            $("#popup").show();
+            setTimeout(function () { $("#popup").hide(); }, 5000);
+        }
+    };
     CustomerComponent.prototype.onNone = function () {
         var client = document.getElementById('client');
         var employee = document.getElementById('employee');
@@ -424,15 +479,19 @@ var CustomerComponent = (function () {
     };
     CustomerComponent.prototype.onServiceplan = function () {
         this.selective = 1;
+        this.planareacode = "";
+        this.planemployee = "";
+        this.markers = Array();
+        this.planroutename = "";
         var serviceplan = document.getElementById('serviceplan');
         this.onNone();
-        this.loadservicerequestdetailplan();
         serviceplan.style.display = "block";
     };
     CustomerComponent.prototype.servicePlanClick = function () {
         this.selective = 2;
         var servicelist = document.getElementById('servicelist');
         this.onNone();
+        this.loadservicerequestplanexecuteddetail();
         servicelist.style.display = "block";
     };
     CustomerComponent.prototype.addserviceplan = function () {
@@ -827,6 +886,36 @@ var CustomerComponent = (function () {
                 alert(error);
                 console.log(error);
             }
+        });
+    };
+    CustomerComponent.prototype.loadservicerequestplanexecuteddetail = function () {
+        var _this = this;
+        // load area code
+        console.log('loaddata service request plan executed detail');
+        var dates2 = this.model.date.day + '-' + this.model.date.month + '-' + this.model.date.year;
+        var url = api_config_1.API.API_GetServiceRequestPlanexecuteddetail + dates2;
+        this.accesstoken = sessionStorage.getItem('access_token');
+        var head2 = new http_1.Headers({
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Bearer ' + this.accesstoken
+        });
+        this.http.get(url, {
+            headers: head2
+        })
+            .map(function (res) {
+            return res.json();
+        }).subscribe(function (data) {
+            console.log(data);
+            _this.areacodearray = Array();
+            _this.areacodearray = data;
+            //      this.assigned
+            //    this.assigned = data.serviceinformation[0].assignedto;
+            //    this.count= data.serviceinformation[0].length;
+            console.log(_this.areacodearray);
+            _this.reInitDatatable();
+            console.log("data updated");
+        }, function (error) {
+            console.log("errors" + error);
         });
     };
     CustomerComponent.prototype.loadareacode = function () {
