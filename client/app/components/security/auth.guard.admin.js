@@ -18,7 +18,7 @@ var CanActivateViaAuthGuardAdmin = (function () {
         this.router = router;
     }
     CanActivateViaAuthGuardAdmin.prototype.canActivate = function () {
-        if (sessionStorage.getItem('adminUser')) {
+        if (localStorage.getItem('adminUser')) {
             // logged in so return true
             return true;
         }

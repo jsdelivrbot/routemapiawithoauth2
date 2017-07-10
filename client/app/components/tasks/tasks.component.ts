@@ -35,12 +35,12 @@ export class TasksComponent implements OnInit{
     
     // on init
     ngOnInit(){
-if(sessionStorage.getItem('adminUser')=='admin'){
+if(localStorage.getItem('User')=='admin'){
      
      this.router.navigate(['/admin']);
 
         }
-     else if(sessionStorage.getItem('currentUser')=='customer'){
+     else{
         this.router.navigate(['/customer']);
      }
 
@@ -74,8 +74,8 @@ if(sessionStorage.getItem('adminUser')=='admin'){
     // get access token
        let urlaccess = API.API_AccessToken;
              let body2 = "username="+this.name+"&password="+this.password+'&grant_type=password';
-             sessionStorage.setItem('username',this.name)
-             var authdata = btoa('test' + ':' + 'secret');
+             localStorage.setItem('username',this.name)
+             var authdata = btoa('clientBasic' + ':' + 'clientPassword');
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Basic '+ authdata
@@ -86,10 +86,12 @@ if(sessionStorage.getItem('adminUser')=='admin'){
             .subscribe(data => {
               this.access_token =  data.access_token;               
               this.refresh_token = data.refresh_token; 
+                 
     console.log('access_token' + this.access_token +'\n refresh_token' + this.refresh_token)
-        sessionStorage.setItem('access_token',this.access_token)      
+        localStorage.setItem('access_token',this.access_token)      
         localStorage.setItem('refresh_token',this.refresh_token)    
-        sessionStorage.setItem('adminUser',this.name)
+        // localStorage.setItem('objectId',data.userObjectId)
+        localStorage.setItem('User',this.name)
         this.router.navigate(['/admin']);   
      }, error => {
                console.log(error);
@@ -106,8 +108,8 @@ if(sessionStorage.getItem('adminUser')=='admin'){
     // get access token
        let urlaccess = API.API_AccessToken;
              let body2 = "username="+this.name+"&password="+this.password+'&grant_type=password';
-            sessionStorage.setItem('username',this.name)
-             var authdata = btoa('test' + ':' + 'secret');
+            localStorage.setItem('username',this.name)
+             var authdata = btoa('clientBasic' + ':' + 'clientPassword');
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Basic '+ authdata
@@ -121,9 +123,10 @@ if(sessionStorage.getItem('adminUser')=='admin'){
               this.access_token =  data.access_token;               
               this.refresh_token = data.refresh_token; 
     console.log('access_token' + this.access_token +'\n refresh_token' + this.refresh_token)
-        sessionStorage.setItem('access_token',this.access_token)      
+    // localStorage.setItem('objectId',data.userObjectId)
+        localStorage.setItem('access_token',this.access_token)      
         localStorage.setItem('refresh_token',this.refresh_token)    
-         sessionStorage.setItem('currentUser',this.name)
+         localStorage.setItem('User',this.name)
      this.router.navigate(['/customer']);  
      }, error => {
                console.log(error + "customer error");

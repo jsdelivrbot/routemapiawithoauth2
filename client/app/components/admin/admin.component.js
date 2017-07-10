@@ -26,6 +26,12 @@ var AdminComponent = (function () {
     }
     // on init
     AdminComponent.prototype.ngOnInit = function () {
+        if (localStorage.getItem('User') == 'admin') {
+            this.router.navigate(['/admin']);
+        }
+        else {
+            this.router.navigate(['/customeron']);
+        }
         $("#alerttag").show();
         setTimeout(function () { $("#alerttag").hide(); }, 5000);
         this.loaddata();
@@ -92,9 +98,10 @@ var AdminComponent = (function () {
     };
     // logging out
     AdminComponent.prototype.logout = function () {
-        sessionStorage.removeItem('adminUser');
-        sessionStorage.removeItem('access_token');
+        localStorage.removeItem('User');
+        localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        //    this.location.replaceState('/');
         this.router.navigate(['/login']);
         console.log('logged out');
     };
@@ -115,7 +122,7 @@ var AdminComponent = (function () {
                 // get access token
                 var urlaccess = api_config_1.API.API_AddCustomer;
                 var body2 = "name=" + this.name + "&password=" + this.password + '&email=' + this.email + '&code=' + this.code + '&location=' + this.location + '&api=' + this.api + '&address=' + this.address + '&phone=' + this.phone;
-                this.accesstoken = sessionStorage.getItem('access_token');
+                this.accesstoken = localStorage.getItem('access_token');
                 var head2 = new http_1.Headers({
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Authorization': 'Bearer ' + this.accesstoken
@@ -156,7 +163,7 @@ var AdminComponent = (function () {
         var _this = this;
         console.log('loaddata');
         var url = api_config_1.API.API_GetCustomer;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -188,7 +195,7 @@ var AdminComponent = (function () {
         console.log('deletedata');
         console.log(id);
         var url = api_config_1.API.API_RemoveCustomer + id;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -217,7 +224,7 @@ var AdminComponent = (function () {
         var _this = this;
         console.log('loaddata');
         var url = api_config_1.API.API_GetCustomer + id;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -249,7 +256,7 @@ var AdminComponent = (function () {
     };
     AdminComponent.prototype.edit = function (id) {
         console.log('reached edit');
-        sessionStorage.setItem('tempid', id);
+        localStorage.setItem('tempid', id);
         var main = document.getElementById('adminmain');
         main.style.display = 'none';
         var notify = document.getElementById('addcustomer');
@@ -271,10 +278,10 @@ var AdminComponent = (function () {
             !(this.phone == "")) {
             if (this.password == this.cpassword) {
                 // get access token
-                var id = sessionStorage.getItem('tempid');
+                var id = localStorage.getItem('tempid');
                 var urlaccess = api_config_1.API.API_UpdateCustomer + id;
                 var body2 = "name=" + this.name + "&password=" + this.password + '&email=' + this.email + '&code=' + this.code + '&location=' + this.location + '&api=' + this.api + '&address=' + this.address + '&phone=' + this.phone;
-                this.accesstoken = sessionStorage.getItem('access_token');
+                this.accesstoken = localStorage.getItem('access_token');
                 var head2 = new http_1.Headers({
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Authorization': 'Bearer ' + this.accesstoken
@@ -311,11 +318,11 @@ var AdminComponent = (function () {
     };
     AdminComponent.prototype.passwordForm = function () {
         var _this = this;
-        var names = sessionStorage.getItem('adminUser');
+        var names = localStorage.getItem('adminUser');
         if (this.cnewpassword == this.newpassword) {
             var urlaccess = api_config_1.API.API_UpdatePassword;
             var body2 = "name=" + names + "&password=" + this.newpassword + '&oldpassword=' + this.currentpassword;
-            this.accesstoken = sessionStorage.getItem('access_token');
+            this.accesstoken = localStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Bearer ' + this.accesstoken
@@ -329,8 +336,25 @@ var AdminComponent = (function () {
             })
                 .subscribe(function (data) {
                 console.log(data);
-                _this.home();
-                _this.router.navigate(['/admin']);
+                var urlaccess = api_config_1.API.API_AccessToken;
+                var refresh_token = localStorage.getItem('refresh_token');
+                var body2 = "username=" + _this.name + "&refresh_token=" + refresh_token + '&grant_type=refresh_token';
+                var authdata = btoa('clientBasic' + ':' + 'clientPassword');
+                var head2 = new http_1.Headers({
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + authdata
+                });
+                _this.http.post(urlaccess, body2, { headers: head2 })
+                    .map(function (res) { return res.json(); })
+                    .subscribe(function (data) {
+                    localStorage.setItem('access_token', data.access_token);
+                    _this.home();
+                    _this.router.navigate(['/admin']);
+                }, function (error) {
+                    console.log(error);
+                    $("#alerttag").show();
+                    setTimeout(function () { $("#alerttag").hide(); }, 5000);
+                });
             }, function (error) {
                 if (error == "Unauthorized") {
                     console.log(error);

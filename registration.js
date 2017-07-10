@@ -15,7 +15,7 @@ exports.registerUser = function(req, res) {
         var username = req.body['username']
         var password = req.body['password']
         
-       db.collection('users').findOne({code: 'admin123'}, function (err, user) {
+       db.collection('users').findOne({code: 'admin'}, function (err, user) {
             if(user) {
                 res.send("Username is already taken", 422)
             } else {

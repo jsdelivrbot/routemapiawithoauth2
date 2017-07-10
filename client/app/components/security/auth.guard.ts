@@ -15,7 +15,7 @@ constructor(private authService:AuthService,private router: Router){
 
 canActivate() {
     
-    if (sessionStorage.getItem('currentUser')) {
+    if (localStorage.getItem('User')) {
             // logged in so return true
             return true;
         }

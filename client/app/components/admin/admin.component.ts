@@ -57,6 +57,15 @@ export class AdminComponent implements OnInit{
 
 // on init
     ngOnInit(){
+        if(localStorage.getItem('User')=='admin'){
+     
+     this.router.navigate(['/admin']);
+
+        }
+     else{
+        this.router.navigate(['/customeron']);
+     }
+
     $("#alerttag").show();
   setTimeout(function() { $("#alerttag").hide(); }, 5000);
 this.loaddata();
@@ -145,10 +154,10 @@ main.style.display='none';
 // logging out
    logout(){
    
-   sessionStorage.removeItem('adminUser');
-   sessionStorage.removeItem('access_token');      
+   localStorage.removeItem('User');
+   localStorage.removeItem('access_token');      
    localStorage.removeItem('refresh_token');    
-
+//    this.location.replaceState('/');
    this.router.navigate(['/login']);
    
    console.log('logged out');
@@ -177,7 +186,7 @@ submitForm(){
   // get access token
        let urlaccess = API.API_AddCustomer;
              let body2 = "name="+this.name+"&password="+this.password+'&email='+this.email+'&code='+this.code+'&location='+this.location+'&api='+this.api+'&address='+this.address+'&phone='+this.phone;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -224,7 +233,7 @@ $("#notifys").show();
      loaddata(){
        console.log('loaddata');
 let url = API.API_GetCustomer;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -260,7 +269,7 @@ console.log(error);
  console.log('deletedata');
  console.log(id);
 let url = API.API_RemoveCustomer+id;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -292,7 +301,7 @@ console.log(error);
 loadsingledata(id){
        console.log('loaddata');
 let url = API.API_GetCustomer+id;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -327,7 +336,7 @@ console.log(error);
 
 edit(id){
   console.log('reached edit');
-    sessionStorage.setItem('tempid',id);
+    localStorage.setItem('tempid',id);
     var main = document.getElementById('adminmain');
     main.style.display='none';
     var notify = document.getElementById('addcustomer');
@@ -357,10 +366,10 @@ updateForm(){
       if(this.password == this.cpassword){
 
   // get access token
-  var id = sessionStorage.getItem('tempid');
+  var id = localStorage.getItem('tempid');
        let urlaccess = API.API_UpdateCustomer+id;
              let body2 = "name="+this.name+"&password="+this.password+'&email='+this.email+'&code='+this.code+'&location='+this.location+'&api='+this.api+'&address='+this.address+'&phone='+this.phone;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -405,12 +414,12 @@ updateForm(){
 
 passwordForm(){
 
-var names = sessionStorage.getItem('adminUser')
+var names = localStorage.getItem('adminUser')
 if(this.cnewpassword == this.newpassword){
 
        let urlaccess = API.API_UpdatePassword;
              let body2 ="name="+names+"&password="+this.newpassword+'&oldpassword='+this.currentpassword;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -424,10 +433,34 @@ if(this.cnewpassword == this.newpassword){
             // do any other checking for statuses here
         })
        .subscribe(data => {
-       console.log(data);
-       this.home();            
+        console.log(data);
+
+    
+
+ let urlaccess = API.API_AccessToken;
+ var refresh_token = localStorage.getItem('refresh_token')
+             let body2 = "username="+this.name+"&refresh_token="+refresh_token+'&grant_type=refresh_token';
+             var authdata = btoa('clientBasic' + ':' + 'clientPassword');
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Basic '+ authdata
+    });
+    
+            this.http.post(urlaccess, body2, {headers : head2})
+            .map(res =>  res.json())
+            .subscribe(data => {
+       
+           localStorage.setItem('access_token',data.access_token)      
+       
+        this.home();            
         this.router.navigate(['/admin']);   
      }, error => {
+               console.log(error);
+            $("#alerttag").show();
+  setTimeout(function() { $("#alerttag").hide(); }, 5000);
+            });
+       
+}, error => {
        if(error=="Unauthorized"){
        console.log(error);
        alert(error);

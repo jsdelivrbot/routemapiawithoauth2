@@ -76,7 +76,7 @@ var CustomerComponent = (function () {
         var url = api_config_1.API.API_UpdateServicerequestAssigntrue + id;
         console.log(this.selectedvalue);
         var body2 = "";
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -113,7 +113,7 @@ var CustomerComponent = (function () {
         var url = api_config_1.API.API_UpdateServicerequestAssignfalse + id;
         console.log(this.selectedvalue);
         var body2 = "";
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -149,7 +149,7 @@ var CustomerComponent = (function () {
         var dates2 = this.model.date.day + '-' + this.model.date.month + '-' + this.model.date.year;
         console.log(dates2);
         var url = api_config_1.API.API_GetServiceRequestPlan + this.planareacode + '/' + dates2;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -230,16 +230,22 @@ var CustomerComponent = (function () {
             this.addservice();
         }
         else if (this.lastlocation == 5) {
-            this.editarea(sessionStorage.getItem('tempid'));
+            this.editarea(localStorage.getItem('tempid'));
         }
         else if (this.lastlocation == 6) {
-            this.editclient(sessionStorage.getItem('tempid'));
+            this.editclient(localStorage.getItem('tempid'));
         }
         else if (this.lastlocation == 7) {
-            this.editservice(sessionStorage.getItem('tempid'));
+            this.editservice(localStorage.getItem('tempid'));
         }
     };
     CustomerComponent.prototype.ngOnInit = function () {
+        if (localStorage.getItem('User') == 'admin') {
+            this.router.navigate(['/admin']);
+        }
+        else {
+            this.router.navigate(['/customer']);
+        }
         //called after the constructor and called  after the first ngOnChanges() 
         this.date();
         $("#alerttag").show();
@@ -321,7 +327,7 @@ var CustomerComponent = (function () {
         if (this.planroutename != null && this.planareacode != null) {
             var url = api_config_1.API.API_AddPlanexecuted;
             var body2 = "planroutename=" + this.planroutename + "&date=" + dates2 + "&areacode=" + this.planareacode;
-            this.accesstoken = sessionStorage.getItem('access_token');
+            this.accesstoken = localStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Bearer ' + this.accesstoken
@@ -510,8 +516,8 @@ var CustomerComponent = (function () {
         // serviceaddlist.style.display = 'block'
     };
     CustomerComponent.prototype.logout = function () {
-        sessionStorage.removeItem('currentUser');
-        sessionStorage.removeItem('access_token');
+        localStorage.removeItem('User');
+        localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         this.router.navigate(['/login']);
     };
@@ -528,7 +534,7 @@ var CustomerComponent = (function () {
         if (this.code != null && this.areaname != null && this.location != null) {
             var url = api_config_1.API.API_AddAreacode;
             var body2 = "code=" + this.code + "&areaname=" + this.areaname + '&location=' + this.location;
-            this.accesstoken = sessionStorage.getItem('access_token');
+            this.accesstoken = localStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Bearer ' + this.accesstoken
@@ -583,7 +589,7 @@ var CustomerComponent = (function () {
             if (this.password == this.cnewpassword) {
                 var url = api_config_1.API.API_AddEmployee;
                 var body2 = "code=" + this.code + "&areacode=" + this.areacode + '&name=' + this.name + '&password=' + this.password + '&phone=' + this.phone + '&address=' + this.address;
-                this.accesstoken = sessionStorage.getItem('access_token');
+                this.accesstoken = localStorage.getItem('access_token');
                 var head2 = new http_1.Headers({
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Authorization': 'Bearer ' + this.accesstoken
@@ -653,7 +659,7 @@ var CustomerComponent = (function () {
             var url = api_config_1.API.API_AddClient;
             console.log(this.selectedvalue);
             var body2 = "clientcode=" + this.code + "&areacode=" + this.selectedvalue + '&clientname=' + this.name + '&address=' + this.address + '&phone=' + this.phone + '&mobile=' + this.mobile + '&location=' + this.location + '&extraroadpoints=' + this.extraroadpoints;
-            this.accesstoken = sessionStorage.getItem('access_token');
+            this.accesstoken = localStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Bearer ' + this.accesstoken
@@ -709,7 +715,7 @@ var CustomerComponent = (function () {
         // post service form
         console.log('loaddata service form');
         var url = api_config_1.API.API_GetAreacode;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -742,7 +748,7 @@ var CustomerComponent = (function () {
         // load area code
         console.log('loaddata client code detail');
         var url = api_config_1.API.API_GetClientcodedetail + this.code;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -791,7 +797,7 @@ var CustomerComponent = (function () {
         // load area code
         console.log('loaddata clients detail');
         var url = api_config_1.API.API_GetClients;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -829,7 +835,7 @@ var CustomerComponent = (function () {
         // load area code
         console.log('loaddata service request detail');
         var url = api_config_1.API.API_GetServicerequest;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -861,7 +867,7 @@ var CustomerComponent = (function () {
         // load area code
         console.log('loaddata service request detail');
         var url = api_config_1.API.API_GetServiceRequestPlandetail;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -894,7 +900,7 @@ var CustomerComponent = (function () {
         console.log('loaddata service request plan executed detail');
         var dates2 = this.model.date.day + '-' + this.model.date.month + '-' + this.model.date.year;
         var url = api_config_1.API.API_GetServiceRequestPlanexecuteddetail + dates2;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -923,7 +929,7 @@ var CustomerComponent = (function () {
         // load area code
         console.log('loaddata arae code');
         var url = api_config_1.API.API_GetAreacode;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -939,7 +945,7 @@ var CustomerComponent = (function () {
             }
             // do any other checking for statuses here
         }).subscribe(function (data) {
-            console.log(JSON.stringify(data));
+            console.log(data);
             _this.areacodearray = Array();
             _this.areacodearray = data;
             _this.reInitDatatable();
@@ -955,7 +961,7 @@ var CustomerComponent = (function () {
         // load area code
         console.log('loaddata employee');
         var url = api_config_1.API.API_GetEmployee;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -998,7 +1004,7 @@ var CustomerComponent = (function () {
             var url = api_config_1.API.API_AddServicerequest;
             console.log(this.selectedvalue);
             var body2 = "clientcode=" + this.code + "&areacode=" + this.areacode + '&clientname=' + this.name + '&address=' + this.address + '&phone=' + this.phone + '&mobile=' + this.aphone + '&location=' + this.location + '&requesttype=' + this.requesttype + '&bookingdate=' + dates + '&servicedate=' + dates2;
-            this.accesstoken = sessionStorage.getItem('access_token');
+            this.accesstoken = localStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Bearer ' + this.accesstoken
@@ -1047,7 +1053,7 @@ var CustomerComponent = (function () {
         console.log('deletedata');
         console.log(id);
         var url = api_config_1.API.API_RemoveArea + id;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -1077,7 +1083,7 @@ var CustomerComponent = (function () {
         console.log('deletedata');
         console.log(id);
         var url = api_config_1.API.API_RemoveCustomer + id;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -1107,7 +1113,7 @@ var CustomerComponent = (function () {
         console.log('deletedata');
         console.log(id);
         var url = api_config_1.API.API_RemoveCustomer + id;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -1137,7 +1143,7 @@ var CustomerComponent = (function () {
         console.log('deletedata');
         console.log(id);
         var url = api_config_1.API.API_RemoveService + id;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -1165,7 +1171,7 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.editarea = function (id) {
         this.selective = 2;
         console.log('reached edit');
-        sessionStorage.setItem('tempid', id);
+        localStorage.setItem('tempid', id);
         this.onNone();
         var editareacode = document.getElementById('editareacode');
         editareacode.style.display = 'block';
@@ -1174,7 +1180,7 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.editemployee = function (id) {
         this.selective = 2;
         console.log('reached edit');
-        sessionStorage.setItem('tempid', id);
+        localStorage.setItem('tempid', id);
         this.onNone();
         var editemployee = document.getElementById('editemployee');
         editemployee.style.display = 'block';
@@ -1183,7 +1189,7 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.editclient = function (id) {
         this.selective = 2;
         console.log('reached edit');
-        sessionStorage.setItem('tempid', id);
+        localStorage.setItem('tempid', id);
         this.onNone();
         var editclient = document.getElementById('editclient');
         editclient.style.display = 'block';
@@ -1192,7 +1198,7 @@ var CustomerComponent = (function () {
     CustomerComponent.prototype.editservice = function (id) {
         this.selective = 2;
         console.log('reached edit');
-        sessionStorage.setItem('tempid', id);
+        localStorage.setItem('tempid', id);
         this.onNone();
         var editservice = document.getElementById('editservice');
         editservice.style.display = 'block';
@@ -1202,7 +1208,7 @@ var CustomerComponent = (function () {
         var _this = this;
         console.log('loadareadata');
         var url = api_config_1.API.API_GetAreacode + id;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -1233,7 +1239,7 @@ var CustomerComponent = (function () {
         var _this = this;
         console.log('loaddata');
         var url = api_config_1.API.API_GetCustomer + id;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -1266,7 +1272,7 @@ var CustomerComponent = (function () {
         var _this = this;
         console.log('loaddata');
         var url = api_config_1.API.API_GetCustomer + id;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -1301,7 +1307,7 @@ var CustomerComponent = (function () {
         var _this = this;
         console.log('loaddata');
         var url = api_config_1.API.API_GetServicerequest + id;
-        this.accesstoken = sessionStorage.getItem('access_token');
+        this.accesstoken = localStorage.getItem('access_token');
         var head2 = new http_1.Headers({
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': 'Bearer ' + this.accesstoken
@@ -1346,12 +1352,12 @@ var CustomerComponent = (function () {
         var _this = this;
         var dates = this.bookingdate.date.day + '/' + this.bookingdate.date.month + '/' + this.bookingdate.date.year;
         var dates2 = this.servicedate.date.day + '/' + this.servicedate.date.month + '/' + this.servicedate.date.year;
-        var id = sessionStorage.getItem('tempid');
+        var id = localStorage.getItem('tempid');
         if (this.code != '') {
             var url = api_config_1.API.API_UpdateServicerequest + id;
             console.log(this.selectedvalue);
             var body2 = "clientcode=" + this.code + "&areacode=" + this.areacode + '&clientname=' + this.name + '&address=' + this.address + '&phone=' + this.phone + '&mobile=' + this.aphone + '&location=' + this.location + '&requesttype=' + this.requesttype + '&bookingdate=' + dates + '&servicedate=' + dates2;
-            this.accesstoken = sessionStorage.getItem('access_token');
+            this.accesstoken = localStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Bearer ' + this.accesstoken
@@ -1384,11 +1390,11 @@ var CustomerComponent = (function () {
     };
     CustomerComponent.prototype.updateEmployeeForm = function () {
         var _this = this;
-        var id = sessionStorage.getItem('tempid');
+        var id = localStorage.getItem('tempid');
         if (this.code != '' && this.areacode != '' && this.password != '' && this.name != '' && this.phone != '' && this.address != '') {
             var url = api_config_1.API.API_UpdateEmployee + id;
             var body2 = "code=" + this.code + "&areacode=" + this.areacode + '&name=' + this.name + '&password=' + this.password + '&phone=' + this.phone + '&address=' + this.address;
-            this.accesstoken = sessionStorage.getItem('access_token');
+            this.accesstoken = localStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Bearer ' + this.accesstoken
@@ -1434,12 +1440,12 @@ var CustomerComponent = (function () {
     };
     CustomerComponent.prototype.updateClientForm = function () {
         var _this = this;
-        var id = sessionStorage.getItem('tempid');
+        var id = localStorage.getItem('tempid');
         if (this.code != null && this.areacode != null && this.name != null && this.phone != null && this.address != null && this.mobile != null) {
             var url = api_config_1.API.API_UpdateClient + id;
             console.log(this.selectedvalue);
             var body2 = "clientcode=" + this.code + "&areacode=" + this.selectedvalue + '&clientname=' + this.name + '&address=' + this.address + '&phone=' + this.phone + '&mobile=' + this.mobile + '&location=' + this.location + '&extraroadpoints=' + this.extraroadpoints;
-            this.accesstoken = sessionStorage.getItem('access_token');
+            this.accesstoken = localStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Bearer ' + this.accesstoken
@@ -1483,11 +1489,11 @@ var CustomerComponent = (function () {
     };
     CustomerComponent.prototype.updateAreaForm = function () {
         var _this = this;
-        var id = sessionStorage.getItem('tempid');
+        var id = localStorage.getItem('tempid');
         if (this.code != '' && this.areaname != '' && this.location != '') {
             var url = api_config_1.API.API_UpdateAreacode + id;
             var body2 = "code=" + this.code + "&areaname=" + this.areaname + '&location=' + this.location;
-            this.accesstoken = sessionStorage.getItem('access_token');
+            this.accesstoken = localStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Bearer ' + this.accesstoken
@@ -1540,11 +1546,11 @@ var CustomerComponent = (function () {
     };
     CustomerComponent.prototype.passwordForm = function () {
         var _this = this;
-        var names = sessionStorage.getItem('currentUser');
+        var names = localStorage.getItem('currentUser');
         if (this.cnewpassword == this.newpassword) {
             var urlaccess = api_config_1.API.API_UpdatePassword;
             var body2 = "name=" + names + "&password=" + this.newpassword + '&oldpassword=' + this.currentpassword;
-            this.accesstoken = sessionStorage.getItem('access_token');
+            this.accesstoken = localStorage.getItem('access_token');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Bearer ' + this.accesstoken
@@ -1558,9 +1564,26 @@ var CustomerComponent = (function () {
             })
                 .subscribe(function (data) {
                 console.log(data);
-                _this.onAreacode();
-                _this.router.navigate(['/customer']);
-                console.log("reached here");
+                var urlaccess = api_config_1.API.API_AccessToken;
+                var refresh_token = localStorage.getItem('refresh_token');
+                var body2 = "username=" + _this.name + "&refresh_token=" + refresh_token + '&grant_type=refresh_token';
+                var authdata = btoa('clientBasic' + ':' + 'clientPassword');
+                var head2 = new http_1.Headers({
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + authdata
+                });
+                _this.http.post(urlaccess, body2, { headers: head2 })
+                    .map(function (res) { return res.json(); })
+                    .subscribe(function (data) {
+                    localStorage.setItem('access_token', data.access_token);
+                    _this.onAreacode();
+                    _this.router.navigate(['/customer']);
+                    console.log("reached here");
+                }, function (error) {
+                    console.log(error);
+                    $("#alerttag").show();
+                    setTimeout(function () { $("#alerttag").hide(); }, 5000);
+                });
             }, function (error) {
                 if (error == "Unauthorized") {
                     console.log(error);

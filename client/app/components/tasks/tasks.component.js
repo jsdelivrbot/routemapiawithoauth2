@@ -22,10 +22,10 @@ var TasksComponent = (function () {
     }
     // on init
     TasksComponent.prototype.ngOnInit = function () {
-        if (sessionStorage.getItem('adminUser') == 'admin') {
+        if (localStorage.getItem('User') == 'admin') {
             this.router.navigate(['/admin']);
         }
-        else if (sessionStorage.getItem('currentUser') == 'customer') {
+        else {
             this.router.navigate(['/customer']);
         }
     };
@@ -49,8 +49,8 @@ var TasksComponent = (function () {
             // get access token
             var urlaccess = api_config_1.API.API_AccessToken;
             var body2 = "username=" + this.name + "&password=" + this.password + '&grant_type=password';
-            sessionStorage.setItem('username', this.name);
-            var authdata = btoa('test' + ':' + 'secret');
+            localStorage.setItem('username', this.name);
+            var authdata = btoa('clientBasic' + ':' + 'clientPassword');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Basic ' + authdata
@@ -61,9 +61,10 @@ var TasksComponent = (function () {
                 _this.access_token = data.access_token;
                 _this.refresh_token = data.refresh_token;
                 console.log('access_token' + _this.access_token + '\n refresh_token' + _this.refresh_token);
-                sessionStorage.setItem('access_token', _this.access_token);
+                localStorage.setItem('access_token', _this.access_token);
                 localStorage.setItem('refresh_token', _this.refresh_token);
-                sessionStorage.setItem('adminUser', _this.name);
+                // localStorage.setItem('objectId',data.userObjectId)
+                localStorage.setItem('User', _this.name);
                 _this.router.navigate(['/admin']);
             }, function (error) {
                 console.log(error);
@@ -77,8 +78,8 @@ var TasksComponent = (function () {
             // get access token
             var urlaccess = api_config_1.API.API_AccessToken;
             var body2 = "username=" + this.name + "&password=" + this.password + '&grant_type=password';
-            sessionStorage.setItem('username', this.name);
-            var authdata = btoa('test' + ':' + 'secret');
+            localStorage.setItem('username', this.name);
+            var authdata = btoa('clientBasic' + ':' + 'clientPassword');
             var head2 = new http_1.Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Basic ' + authdata
@@ -89,9 +90,10 @@ var TasksComponent = (function () {
                 _this.access_token = data.access_token;
                 _this.refresh_token = data.refresh_token;
                 console.log('access_token' + _this.access_token + '\n refresh_token' + _this.refresh_token);
-                sessionStorage.setItem('access_token', _this.access_token);
+                // localStorage.setItem('objectId',data.userObjectId)
+                localStorage.setItem('access_token', _this.access_token);
                 localStorage.setItem('refresh_token', _this.refresh_token);
-                sessionStorage.setItem('currentUser', _this.name);
+                localStorage.setItem('User', _this.name);
                 _this.router.navigate(['/customer']);
             }, function (error) {
                 console.log(error + "customer error");

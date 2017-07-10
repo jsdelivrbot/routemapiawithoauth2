@@ -23,7 +23,7 @@ server.exchange(oauth2orize.exchange.password(function (client, username, passwo
             
             var expirationDate = new Date(new Date().getTime() + (3600 * 100000))
         
-            db.collection('accessTokens').save({token: tokenHash, expirationDate: expirationDate, clientId: client.clientId, userId: username, scope: scope}, function (err) {
+            db.collection('accessTokens').save({token: tokenHash, expirationDate: expirationDate, clientId: client.clientId, userId: username, scope: scope,userObjectId:user._id}, function (err) {
                 if (err) return done(err)
                 db.collection('refreshTokens').save({refreshToken: refreshTokenHash, clientId: client.clientId, userId: username}, function (err) {
                     if (err) return done(err)

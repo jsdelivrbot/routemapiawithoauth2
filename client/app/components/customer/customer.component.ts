@@ -175,7 +175,7 @@ addtask(name){
      let url = API.API_UpdateServicerequestAssigntrue+id;
        console.log(this.selectedvalue);
              let body2 = "";
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -216,7 +216,7 @@ removetask(name){
      let url = API.API_UpdateServicerequestAssignfalse+id;
        console.log(this.selectedvalue);
              let body2 = "";
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -255,7 +255,7 @@ plansearch(){
    var dates2 =this.model.date.day+'-'+this.model.date.month+'-'+this.model.date.year;
     console.log(dates2)
        let url = API.API_GetServiceRequestPlan+this.planareacode+'/'+dates2;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -346,11 +346,11 @@ mapClicked($event: MouseEvent) {
    }else if(this.lastlocation == 4){
      this.addservice()
    }else if(this.lastlocation == 5){
-     this.editarea(sessionStorage.getItem('tempid'))
+     this.editarea(localStorage.getItem('tempid'))
    }else if(this.lastlocation == 6){
-     this.editclient(sessionStorage.getItem('tempid'))
+     this.editclient(localStorage.getItem('tempid'))
    }else if(this.lastlocation == 7){
-     this.editservice(sessionStorage.getItem('tempid'))
+     this.editservice(localStorage.getItem('tempid'))
    }
 
 }
@@ -370,6 +370,16 @@ mapClicked($event: MouseEvent) {
 
 
 ngOnInit(){
+
+    if(localStorage.getItem('User')=='admin'){
+     
+     this.router.navigate(['/admin']);
+
+        }
+     else{
+        this.router.navigate(['/customer']);
+     }
+
      //called after the constructor and called  after the first ngOnChanges() 
 this.date();      
 
@@ -478,7 +488,7 @@ planroutesubmit(){
     if(this.planroutename != null && this.planareacode!= null){
        let url = API.API_AddPlanexecuted;
              let body2 = "planroutename="+this.planroutename+"&date="+dates2+"&areacode="+this.planareacode;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -715,8 +725,8 @@ this.loademployee()
 
 logout()
 {
-   sessionStorage.removeItem('currentUser');
-   sessionStorage.removeItem('access_token');      
+   localStorage.removeItem('User');
+   localStorage.removeItem('access_token');      
    localStorage.removeItem('refresh_token'); 
    this.router.navigate(['/login']);
 
@@ -738,7 +748,7 @@ areaForm(){
       if(this.code != null && this.areaname != null && this.location !=null){
        let url = API.API_AddAreacode;
              let body2 = "code="+this.code+"&areaname="+this.areaname+'&location='+this.location;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -802,7 +812,7 @@ if(this.code != null && this.areacode != null && this.password != null && this.n
      if(this.password == this.cnewpassword){
        let url = API.API_AddEmployee;
              let body2 = "code="+this.code+"&areacode="+this.areacode+'&name='+this.name+'&password='+this.password+'&phone='+this.phone+'&address='+this.address;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -882,7 +892,7 @@ if(this.code != null && this.areacode !=null && this.name !=null && this.phone !
        let url = API.API_AddClient;
        console.log(this.selectedvalue);
              let body2 = "clientcode="+this.code+"&areacode="+this.selectedvalue+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.mobile+'&location='+this.location+'&extraroadpoints='+this.extraroadpoints;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -945,7 +955,7 @@ serviceForm(){
 // post service form
  console.log('loaddata service form');
 let url = API.API_GetAreacode;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -984,7 +994,7 @@ loadclientcodedetail(){
 // load area code
   console.log('loaddata client code detail');
 let url = API.API_GetClientcodedetail+this.code;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1035,7 +1045,7 @@ loadclientsdetail(){
 // load area code
   console.log('loaddata clients detail');
 let url = API.API_GetClients;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1075,7 +1085,7 @@ loadservicerequestdetail(){
 // load area code
   console.log('loaddata service request detail');
 let url = API.API_GetServicerequest;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1110,7 +1120,7 @@ loadservicerequestdetailplan(){
 // load area code
   console.log('loaddata service request detail');
 let url = API.API_GetServiceRequestPlandetail;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1146,7 +1156,7 @@ loadservicerequestplanexecuteddetail(){
   console.log('loaddata service request plan executed detail');
   var dates2 =this.model.date.day+'-'+this.model.date.month+'-'+this.model.date.year;
 let url = API.API_GetServiceRequestPlanexecuteddetail +dates2;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1186,7 +1196,7 @@ loadareacode(){
 // load area code
   console.log('loaddata arae code');
 let url = API.API_GetAreacode;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1203,7 +1213,7 @@ let url = API.API_GetAreacode;
             }
             // do any other checking for statuses here
         }).subscribe(data => {
-       console.log(JSON.stringify(data));
+       console.log(data);
        this.areacodearray = Array();
        this.areacodearray = data;
        this.reInitDatatable();
@@ -1220,7 +1230,7 @@ loademployee(){
 // load area code
   console.log('loaddata employee');
 let url = API.API_GetEmployee;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1270,7 +1280,7 @@ servicereqstForm(){
        let url = API.API_AddServicerequest;
        console.log(this.selectedvalue);
              let body2 = "clientcode="+this.code+"&areacode="+this.areacode+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.aphone+'&location='+this.location+'&requesttype='+this.requesttype+'&bookingdate='+dates+'&servicedate='+dates2;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1325,7 +1335,7 @@ removearea(id){
     console.log('deletedata');
  console.log(id);
 let url = API.API_RemoveArea+id;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1357,7 +1367,7 @@ removeemployee(id){
     console.log('deletedata');
  console.log(id);
 let url = API.API_RemoveCustomer+id;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1389,7 +1399,7 @@ removeclient(id){
     console.log('deletedata');
  console.log(id);
 let url = API.API_RemoveCustomer+id;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1422,7 +1432,7 @@ removeservice(id){
     console.log('deletedata');
  console.log(id);
 let url = API.API_RemoveService+id;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1453,7 +1463,7 @@ console.log(error);
 editarea(id){
 this.selective=2    
     console.log('reached edit');
-    sessionStorage.setItem('tempid',id);
+    localStorage.setItem('tempid',id);
     this.onNone()
     var editareacode = document.getElementById('editareacode')
     editareacode.style.display = 'block'
@@ -1463,7 +1473,7 @@ this.selective=2
 editemployee(id){
 this.selective=2
     console.log('reached edit');
-    sessionStorage.setItem('tempid',id);
+    localStorage.setItem('tempid',id);
     this.onNone()
     var editemployee = document.getElementById('editemployee')
     editemployee.style.display = 'block'
@@ -1473,7 +1483,7 @@ this.selective=2
 editclient(id){
     this.selective=2
     console.log('reached edit');
-    sessionStorage.setItem('tempid',id);
+    localStorage.setItem('tempid',id);
    this.onNone()
     var editclient   = document.getElementById('editclient')
     editclient.style.display = 'block'
@@ -1483,7 +1493,7 @@ editclient(id){
 editservice(id){
     this.selective=2
     console.log('reached edit');
-    sessionStorage.setItem('tempid',id);
+    localStorage.setItem('tempid',id);
     this.onNone()
     var editservice = document.getElementById('editservice')
     editservice.style.display = 'block'
@@ -1496,7 +1506,7 @@ editservice(id){
 loadsingleareadata(id){
        console.log('loadareadata');
 let url = API.API_GetAreacode+id;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1532,7 +1542,7 @@ console.log(error);
 loadsingleemployeedata(id){
        console.log('loaddata');
 let url = API.API_GetCustomer+id;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1567,7 +1577,7 @@ console.log(error);
 loadsingleclientdata(id){
        console.log('loaddata');
 let url = API.API_GetCustomer+id;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1605,7 +1615,7 @@ console.log(error);
 loadsingleservicedata(id){
        console.log('loaddata');
 let url = API.API_GetServicerequest+id;
-    this.accesstoken=sessionStorage.getItem('access_token')
+    this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1655,12 +1665,12 @@ updateServiceForm(){
  
       var dates =this.bookingdate.date.day+'/'+this.bookingdate.date.month+'/'+this.bookingdate.date.year;
   var dates2 =this.servicedate.date.day+'/'+this.servicedate.date.month+'/'+this.servicedate.date.year;
-  var id = sessionStorage.getItem('tempid');
+  var id = localStorage.getItem('tempid');
     if(this.code != '' ){
        let url = API.API_UpdateServicerequest+id;
        console.log(this.selectedvalue);
              let body2 = "clientcode="+this.code+"&areacode="+this.areacode+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.aphone+'&location='+this.location+'&requesttype='+this.requesttype+'&bookingdate='+dates+'&servicedate='+dates2;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1697,11 +1707,11 @@ updateServiceForm(){
 
 
 updateEmployeeForm(){
- var id = sessionStorage.getItem('tempid');
+ var id = localStorage.getItem('tempid');
     if(this.code != '' && this.areacode !='' && this.password != '' && this.name !='' && this.phone !='' && this.address != ''){
        let url = API.API_UpdateEmployee+id;
              let body2 = "code="+this.code+"&areacode="+this.areacode+'&name='+this.name+'&password='+this.password+'&phone='+this.phone+'&address='+this.address;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1754,12 +1764,12 @@ if (e.status === 422) {
 
 
        updateClientForm(){
- var id = sessionStorage.getItem('tempid');
+ var id = localStorage.getItem('tempid');
      if(this.code != null && this.areacode !=null && this.name !=null && this.phone !=null && this.address != null && this.mobile !=null){
        let url = API.API_UpdateClient+id;
        console.log(this.selectedvalue);
              let body2 = "clientcode="+this.code+"&areacode="+this.selectedvalue+'&clientname='+this.name+'&address='+this.address+'&phone='+this.phone+'&mobile='+this.mobile+'&location='+this.location+'&extraroadpoints='+this.extraroadpoints;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1813,11 +1823,11 @@ if (e.status === 422) {
 
 
      updateAreaForm(){
- var id = sessionStorage.getItem('tempid');
+ var id = localStorage.getItem('tempid');
        if(this.code != '' && this.areaname != '' && this.location !=''){
        let url = API.API_UpdateAreacode+id;
              let body2 = "code="+this.code+"&areaname="+this.areaname+'&location='+this.location;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1879,12 +1889,12 @@ changepassword(){
 
 passwordForm(){
 
-var names = sessionStorage.getItem('currentUser')
+var names = localStorage.getItem('currentUser')
 if(this.cnewpassword == this.newpassword){
 
        let urlaccess = API.API_UpdatePassword;
              let body2 ="name="+names+"&password="+this.newpassword+'&oldpassword='+this.currentpassword;
-             this.accesstoken=sessionStorage.getItem('access_token')
+             this.accesstoken=localStorage.getItem('access_token')
              let head2 = new Headers({
              'Content-Type': 'application/x-www-form-urlencoded',
              'Authorization':'Bearer '+ this.accesstoken
@@ -1899,9 +1909,31 @@ if(this.cnewpassword == this.newpassword){
         })
        .subscribe(data => {
        console.log(data);
+
+        let urlaccess = API.API_AccessToken;
+ var refresh_token = localStorage.getItem('refresh_token')
+             let body2 = "username="+this.name+"&refresh_token="+refresh_token+'&grant_type=refresh_token';
+             var authdata = btoa('clientBasic' + ':' + 'clientPassword');
+             let head2 = new Headers({
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization':'Basic '+ authdata
+    });
+    
+            this.http.post(urlaccess, body2, {headers : head2})
+            .map(res =>  res.json())
+            .subscribe(data => {
+       
+           localStorage.setItem('access_token',data.access_token)      
+       
        this.onAreacode();            
         this.router.navigate(['/customer']);   
      console.log("reached here")    
+     }, error => {
+               console.log(error);
+            $("#alerttag").show();
+  setTimeout(function() { $("#alerttag").hide(); }, 5000);
+            });
+      
  }, error => {
        if(error=="Unauthorized"){
        console.log(error);

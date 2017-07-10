@@ -34,6 +34,8 @@ var appRoutes = [
         redirectTo: '/login',
         pathMatch: 'full'
     },
+    { path: '404', component: pagenotfound_component_1.pageNotFoundComponent },
+    { path: '**', redirectTo: '/404' },
     { path: '**', component: pagenotfound_component_1.pageNotFoundComponent }
 ];
 var AppModule = (function () {

@@ -27,6 +27,8 @@ const appRoutes: Routes = [
     redirectTo: '/login',
     pathMatch: 'full'
   },
+  {path: '404', component: pageNotFoundComponent},
+ {path: '**', redirectTo: '/404'},
   { path: '**', component: pageNotFoundComponent }
 ];
 
